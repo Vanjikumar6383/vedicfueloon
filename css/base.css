@@ -1,0 +1,464 @@
+/* ============================================
+   VEDICFUELOON — BASE STYLES
+   Reset, typography, global utilities
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap');
+
+/* ── CSS Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--neutral-900);
+  background-color: var(--cream-50);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+#app {
+  overflow-x: hidden;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+img, video, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  background: none;
+  font-size: inherit;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  outline: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ── SVG Icons ── */
+.icon-svg {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.icon-svg[stroke] {
+  fill: none;
+}
+
+/* Size variants */
+.icon-sm .icon-svg { width: 14px; height: 14px; }
+.icon-md .icon-svg { width: 20px; height: 20px; }
+.icon-lg .icon-svg { width: 28px; height: 28px; }
+.icon-xl .icon-svg { width: 40px; height: 40px; }
+
+/* Navbar icon sizing */
+.nav-cart-btn .icon-svg,
+.nav-admin-link .icon-svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Announcement bar icon sizing */
+.announce-icon .icon-svg {
+  width: 14px;
+  height: 14px;
+}
+
+.announce-divider .icon-svg {
+  width: 10px;
+  height: 10px;
+}
+
+/* Footer icon sizing */
+.footer-social .icon-svg {
+  width: 18px;
+  height: 18px;
+}
+
+.footer-col a .icon-svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.6;
+}
+
+.footer-col a:hover .icon-svg {
+  opacity: 1;
+}
+
+/* Badge icon sizing */
+.badge .icon-svg,
+.section-badge .icon-svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Hero badge icon sizing */
+.hero-badge .icon-svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Button icon sizing */
+.btn .icon-svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-lg .icon-svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-icon .icon-svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Card icon sizing */
+.card-add-btn .icon-svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 3;
+}
+
+.card-wishlist .icon-svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Toast icon sizing */
+.toast-icon .icon-svg {
+  width: 22px;
+  height: 22px;
+}
+
+.toast-close .icon-svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Ornament icon sizing */
+.ornament-icon .icon-svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Empty state icon sizing */
+.empty-icon .icon-svg {
+  width: 64px;
+  height: 64px;
+}
+
+/* Cart item icons */
+.cart-item-remove .icon-svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Admin nav icon sizing */
+.admin-nav .nav-icon .icon-svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Scroll btn icon sizing */
+.scroll-btn .icon-svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  color: var(--primary-700);
+  font-weight: 700;
+}
+
+h1 { font-size: var(--text-5xl); letter-spacing: -0.02em; }
+h2 { font-size: var(--text-4xl); letter-spacing: -0.01em; }
+h3 { font-size: var(--text-3xl); }
+h4 { font-size: var(--text-2xl); }
+h5 { font-size: var(--text-xl); }
+h6 { font-size: var(--text-lg); }
+
+.tamil-text {
+  font-family: var(--font-tamil);
+}
+
+.display-heading {
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.subtitle {
+  font-family: var(--font-tamil);
+  color: var(--gold-600);
+  font-size: var(--text-lg);
+  font-weight: 500;
+}
+
+/* ── Container ── */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+.container-narrow {
+  max-width: 960px;
+}
+
+.container-wide {
+  max-width: 1440px;
+}
+
+/* ── Section ── */
+.section {
+  padding: var(--space-20) 0;
+}
+
+.section-cream {
+  background-color: var(--cream-100);
+}
+
+.section-dark {
+  background-color: var(--primary-700);
+  color: var(--cream-50);
+}
+
+.section-dark h1,
+.section-dark h2,
+.section-dark h3,
+.section-dark h4 {
+  color: var(--cream-50);
+}
+
+.section-header {
+  margin-bottom: var(--space-12);
+}
+
+.section-header .section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--gold-100);
+  color: var(--gold-800);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--gold-300);
+}
+
+.section-dark .section-badge {
+  background: rgba(212, 160, 23, 0.15);
+  color: var(--gold-400);
+  border-color: rgba(212, 160, 23, 0.3);
+}
+
+.section-header h2 {
+  margin-bottom: var(--space-3);
+}
+
+.section-header p {
+  color: var(--neutral-500);
+  font-size: var(--text-lg);
+  max-width: 600px;
+}
+
+.section-dark .section-header p {
+  color: var(--cream-300);
+}
+
+/* ── Gold Ornamental Divider ── */
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin: var(--space-8) 0;
+}
+
+.ornament-divider::before,
+.ornament-divider::after {
+  content: '';
+  flex: 1;
+  max-width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-500), transparent);
+}
+
+.ornament-divider .ornament-icon {
+  color: var(--gold-600);
+  font-size: var(--text-xl);
+}
+
+/* ── Kolam Pattern Background ── */
+.kolam-bg {
+  position: relative;
+}
+
+.kolam-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L55 30 L30 55 L5 30 Z' fill='none' stroke='%23D4A017' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23D4A017' stroke-width='1'/%3E%3Ccircle cx='30' cy='5' r='2' fill='%23D4A017'/%3E%3Ccircle cx='55' cy='30' r='2' fill='%23D4A017'/%3E%3Ccircle cx='30' cy='55' r='2' fill='%23D4A017'/%3E%3Ccircle cx='5' cy='30' r='2' fill='%23D4A017'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.kolam-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Kolam Pattern 2 (for dark sections) ── */
+.kolam-dark::before {
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 10 Q60 20 70 40 Q60 60 40 70 Q20 60 10 40 Q20 20 40 10 Z' fill='none' stroke='%23D4A017' stroke-width='0.8'/%3E%3Cpath d='M40 20 Q52 28 56 40 Q52 52 40 56 Q28 52 24 40 Q28 28 40 20 Z' fill='none' stroke='%23D4A017' stroke-width='0.6'/%3E%3Ccircle cx='40' cy='40' r='5' fill='none' stroke='%23D4A017' stroke-width='0.5'/%3E%3Ccircle cx='40' cy='10' r='2' fill='%23D4A017' opacity='0.5'/%3E%3Ccircle cx='70' cy='40' r='2' fill='%23D4A017' opacity='0.5'/%3E%3Ccircle cx='40' cy='70' r='2' fill='%23D4A017' opacity='0.5'/%3E%3Ccircle cx='10' cy='40' r='2' fill='%23D4A017' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+/* ── Utility Classes ── */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.text-gold { color: var(--gold-600); }
+.text-green { color: var(--primary-500); }
+.text-cream { color: var(--cream-50); }
+.text-muted { color: var(--neutral-500); }
+
+.font-display { font-family: var(--font-display); }
+.font-tamil { font-family: var(--font-tamil); }
+
+.fw-400 { font-weight: 400; }
+.fw-500 { font-weight: 500; }
+.fw-600 { font-weight: 600; }
+.fw-700 { font-weight: 700; }
+.fw-800 { font-weight: 800; }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-1 { gap: var(--space-1); }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+.gap-6 { gap: var(--space-6); }
+.gap-8 { gap: var(--space-8); }
+
+.mt-2 { margin-top: var(--space-2); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mt-8 { margin-top: var(--space-8); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.mb-8 { margin-bottom: var(--space-8); }
+
+.hidden { display: none !important; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Scrollbar Styling ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-300);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-500);
+}
+
+/* ── Selection ── */
+::selection {
+  background-color: var(--gold-300);
+  color: var(--primary-900);
+}
+
+/* ── Responsive Typography ── */
+@media (max-width: 768px) {
+  h1 { font-size: var(--text-3xl); }
+  h2 { font-size: var(--text-2xl); }
+  h3 { font-size: var(--text-xl); }
+  
+  .section {
+    padding: var(--space-12) 0;
+  }
+}
+
+@media (max-width: 480px) {
+  html { font-size: 14px; }
+  
+  .container {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+}

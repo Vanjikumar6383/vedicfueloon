@@ -1,0 +1,36 @@
+================================================================================
+VEDICFUELOON — INFINITYFREE DEPLOYMENT GUIDE & 403 FIX
+================================================================================
+
+IF YOU ARE SEEING "403 FORBIDDEN":
+----------------------------------
+There are two reasons InfinityFree shows a 403 Forbidden error:
+
+1. THE '.htaccess' FILE:
+   InfinityFree STRICTLY blocks the "Options" directive in .htaccess.
+   We have updated '.htaccess' in this folder to remove the "Options" line and
+   added "DirectoryIndex index.html".
+   -> Please re-upload the updated '.htaccess' file from this folder to your 'htdocs'
+      (or simply delete .htaccess in InfinityFree File Manager to test immediately).
+
+2. FILE PLACEMENT:
+   'index.html' MUST be directly inside the 'htdocs' folder:
+     CORRECT:   /htdocs/index.html
+     INCORRECT: /htdocs/htdocs_upload_for_infinityfree/index.html
+
+   Make sure the files are placed directly into 'htdocs/', not inside a subfolder!
+
+CHECKLIST OF FILES IN YOUR INFINITYFREE 'htdocs':
+-------------------------------------------------
+  /htdocs/
+    ├── .htaccess           (Updated InfinityFree compatible version)
+    ├── index.html          (Main website entry point)
+    ├── logo.mp4            (Hero video)
+    ├── hero-flower-border.svg
+    ├── petal-border.svg
+    ├── vedicfueloon-emblem.png
+    ├── vedicfueloon-logo-clean.png
+    ├── vedicfueloon logo.jpeg
+    ├── assets/             (Folder containing CSS and JS bundles)
+    └── images/             (Folder containing all 28 product photos)
+================================================================================

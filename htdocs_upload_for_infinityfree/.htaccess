@@ -1,0 +1,49 @@
+# ==============================================================================
+# VEDICFUELOON — INFINITYFREE COMPATIBLE CONFIGURATION
+# (Note: "Options -Indexes" is excluded because InfinityFree blocks Options directives with 403 Forbidden)
+# ==============================================================================
+
+# 1. Set Primary Document File
+DirectoryIndex index.html index.php
+
+# 2. Default Charset
+AddDefaultCharset UTF-8
+
+# 3. Proper MIME Types (ensures MP4 video and SVG play smoothly)
+<IfModule mod_mime.c>
+  AddType video/mp4 .mp4
+  AddType image/svg+xml .svg .svgz
+  AddType image/webp .webp
+  AddType image/png .png
+  AddType image/jpeg .jpg .jpeg
+  AddType application/javascript .js .mjs
+  AddType text/css .css
+  AddType application/json .json
+</IfModule>
+
+# 4. Gzip Compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# 5. Browser Caching
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 month"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType video/mp4 "access plus 1 year"
+</IfModule>
+
+# 6. Fallback Routing for SPA
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.html [L]
+</IfModule>

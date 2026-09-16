@@ -1,0 +1,816 @@
+/* ============================================
+   VEDICFUELOON — ANIMATIONS
+   Keyframes, scroll reveals, micro-interactions
+   ============================================ */
+
+/* ── Faded Blur Scroll Reveal ── */
+@keyframes fadeInUpBlur {
+  from {
+    opacity: 0;
+    transform: translateY(35px);
+    filter: blur(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+}
+
+/* ── Heading Scroll Entrance Animation (Comes Up From Down When Scrolling) ── */
+.split-heading,
+.heading-rise {
+  display: block;
+  opacity: 0;
+  transform: translateY(44px);
+  filter: blur(8px);
+  transition: transform 0.22s ease-out,
+              opacity 0.22s ease-out,
+              filter 0.22s ease-out;
+  will-change: transform, opacity, filter;
+  overflow: visible;
+}
+
+.split-heading.visible,
+.heading-rise.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0px);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.split-word {
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: top;
+  overflow: hidden;
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
+}
+
+.split-space {
+  display: inline-block;
+  width: 0.28em;
+}
+
+.split-char {
+  display: inline-block;
+  transform: translateY(115%) rotate(3deg);
+  opacity: 0;
+  filter: blur(6px);
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out, filter 0.2s ease-out;
+  transition-delay: 0s;
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+}
+
+/* When heading enters viewport, characters spring up from down with staggered delay */
+.split-heading.visible .split-char,
+.heading-rise.visible .split-char {
+  transform: translateY(0) rotate(0deg);
+  opacity: 1;
+  filter: blur(0px);
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(min(var(--char-idx, 0) * 0.018s, 0.55s));
+}
+
+/* Coordinated section header elements rising from down */
+.section-header .section-badge {
+  opacity: 0;
+  transform: translateY(20px);
+  filter: blur(4px);
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out, filter 0.2s ease-out;
+}
+
+.section-header.visible .section-badge,
+.section-header .section-badge.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0px);
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.04s,
+              opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.04s,
+              filter 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.04s;
+}
+
+.section-header p {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(4px);
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out, filter 0.2s ease-out;
+}
+
+.section-header.visible p,
+.section-header p.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0px);
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.15s,
+              opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.15s,
+              filter 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+}
+
+/* ── Faded Blur Scroll Reveal (Triggers Every Time Page Is Scrolled) ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  filter: blur(14px);
+  transition: opacity 0.35s ease-out,
+              transform 0.35s ease-out,
+              filter 0.35s ease-out;
+  will-change: opacity, transform, filter;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Staggered children with faded blur */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(28px) scale(0.98);
+  filter: blur(12px);
+  transition: opacity 0.3s ease-out,
+              transform 0.3s ease-out,
+              filter 0.3s ease-out;
+  will-change: opacity, transform, filter;
+}
+
+.reveal-stagger.visible > * {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-stagger.visible > *:nth-child(1) { transition-delay: 30ms; }
+.reveal-stagger.visible > *:nth-child(2) { transition-delay: 100ms; }
+.reveal-stagger.visible > *:nth-child(3) { transition-delay: 180ms; }
+.reveal-stagger.visible > *:nth-child(4) { transition-delay: 260ms; }
+.reveal-stagger.visible > *:nth-child(5) { transition-delay: 340ms; }
+.reveal-stagger.visible > *:nth-child(6) { transition-delay: 420ms; }
+.reveal-stagger.visible > *:nth-child(7) { transition-delay: 500ms; }
+.reveal-stagger.visible > *:nth-child(8) { transition-delay: 580ms; }
+
+/* Section-level scroll blur reveal */
+.section-scroll-blur {
+  opacity: 0;
+  transform: translateY(32px);
+  filter: blur(16px);
+  transition: opacity 0.35s ease-out,
+              transform 0.35s ease-out,
+              filter 0.35s ease-out;
+  will-change: opacity, transform, filter;
+}
+
+.section-scroll-blur.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Directional and Scale Reveals with Faded Blur */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  filter: blur(12px);
+  transition: opacity 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out;
+  will-change: opacity, transform, filter;
+}
+.reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+  filter: blur(0px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(40px);
+  filter: blur(12px);
+  transition: opacity 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out;
+  will-change: opacity, transform, filter;
+}
+.reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+  filter: blur(0px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.93);
+  filter: blur(14px);
+  transition: opacity 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out;
+  will-change: opacity, transform, filter;
+}
+.reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.section-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  filter: blur(14px);
+  transition: opacity 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out;
+  will-change: opacity, transform, filter;
+}
+.section-animate.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Fade In ── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s var(--ease-out) forwards;
+}
+
+/* ── Slide In from Left ── */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Slide In from Right ── */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Scale In ── */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Hero Animations (Zero Blur) ── */
+@keyframes heroTextReveal {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero .split-heading,
+.hero .split-char,
+.hero .heading-rise,
+.hero .hero-title,
+.hero .hero-badge,
+.hero .hero-desc,
+.hero .hero-tamil,
+.hero-animate * {
+  filter: none !important;
+}
+
+.hero-animate .hero-badge {
+  animation: heroTextReveal 0.8s var(--ease-out) 0.2s both;
+}
+
+.hero-animate .hero-title {
+  animation: heroTextReveal 0.8s var(--ease-out) 0.4s both;
+}
+
+.hero-animate .hero-title.split-heading {
+  animation: none;
+}
+
+.hero-animate .hero-tamil {
+  animation: heroTextReveal 0.8s var(--ease-out) 0.6s both;
+}
+
+.hero-animate .hero-desc {
+  animation: heroTextReveal 0.8s var(--ease-out) 0.8s both;
+}
+
+.hero-animate .hero-actions {
+  animation: heroTextReveal 0.8s var(--ease-out) 1s both;
+}
+
+.hero-animate .hero-card {
+  animation: slideInRight 1s var(--ease-out) 0.6s both;
+}
+
+/* ── Pulse ── */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ── Badge Glow ── */
+@keyframes badgeGlow {
+  0%, 100% { box-shadow: 0 0 5px rgba(212, 160, 23, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(212, 160, 23, 0.5); }
+}
+
+.badge-bestseller {
+  animation: badgeGlow 2.5s ease-in-out infinite;
+}
+
+/* ── Cart Bounce ── */
+@keyframes cartBounce {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(0.9); }
+  75% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.cart-bounce {
+  animation: cartBounce 0.5s var(--ease-spring);
+}
+
+/* ── Counter Animation ── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Shimmer Loading ── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--cream-200) 25%,
+    var(--cream-100) 50%,
+    var(--cream-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* ── Kolam Rotation (subtle) ── */
+@keyframes kolamRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.kolam-rotate {
+  animation: kolamRotate 120s linear infinite;
+}
+
+/* ── Float Animation ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ── Page Transition with Cinematic Faded Blur ── */
+@keyframes pageFadeBlurIn {
+  0% {
+    opacity: 0;
+    filter: blur(16px);
+    transform: translateY(18px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0) scale(1);
+  }
+}
+
+.page-enter {
+  animation: pageFadeBlurIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, filter, transform;
+}
+
+/* ── Success Checkmark ── */
+@keyframes checkmarkDraw {
+  0% { stroke-dashoffset: 50; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes checkmarkCircle {
+  0% { stroke-dashoffset: 200; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* ── Wiggle (for attention) ── */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+.wiggle:hover {
+  animation: wiggle 0.3s ease-in-out;
+}
+
+/* ── Gradient Shift (hero background) ── */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-animate {
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+}
+
+/* ── Number Counter ── */
+.counter-value {
+  display: inline-block;
+  transition: all 0.3s var(--ease-out);
+}
+
+/* ── Hover Lift ── */
+.hover-lift {
+  transition: transform var(--duration-normal) var(--ease-out), 
+              box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── NEW: Text Glow Animation ── */
+@keyframes textGlow {
+  0%, 100% { text-shadow: 0 0 4px rgba(212, 160, 23, 0.2); }
+  50% { text-shadow: 0 0 16px rgba(212, 160, 23, 0.4), 0 0 32px rgba(212, 160, 23, 0.1); }
+}
+
+.text-glow {
+  animation: textGlow 3s ease-in-out infinite;
+}
+
+/* ── NEW: Parallax Float for hero elements ── */
+@keyframes parallaxFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(1deg); }
+  50% { transform: translateY(-4px) rotate(0deg); }
+  75% { transform: translateY(-12px) rotate(-1deg); }
+}
+
+.parallax-float {
+  animation: parallaxFloat 6s ease-in-out infinite;
+}
+
+/* ── NEW: Flower petal falling animation ── */
+@keyframes petalFall {
+  0% {
+    transform: translateY(-20px) rotate(0deg) scale(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+    transform: translateY(0) rotate(45deg) scale(1);
+  }
+  100% {
+    transform: translateY(60px) rotate(180deg) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* ── NEW: Section entrance from sides ── */
+@keyframes slideFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  filter: blur(14px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
+}
+
+.reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+  filter: blur(0px);
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(50px);
+  filter: blur(14px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
+}
+
+.reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+  filter: blur(0px);
+}
+
+/* ── NEW: Scale reveal with Blur ── */
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.9);
+  filter: blur(14px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
+}
+
+.reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0px);
+}
+
+/* ── NEW: Card tilt on hover ── */
+.tilt-hover {
+  transition: transform var(--duration-normal) var(--ease-out);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.tilt-hover:hover {
+  transform: perspective(1000px) rotateY(-2deg) rotateX(2deg) translateY(-4px);
+}
+
+/* ── NEW: Ripple effect on buttons ── */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+}
+
+.btn-ripple:active::before {
+  animation: ripple 0.6s var(--ease-out);
+}
+
+/* ── NEW: Glowing border animation ── */
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: rgba(212, 160, 23, 0.3);
+    box-shadow: 0 0 5px rgba(212, 160, 23, 0.1);
+  }
+  50% {
+    border-color: rgba(212, 160, 23, 0.6);
+    box-shadow: 0 0 15px rgba(212, 160, 23, 0.2);
+  }
+}
+
+.glow-border {
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+/* ── NEW: Smooth section transition with stagger ── */
+@keyframes sectionReveal {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.section-animate {
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  filter: blur(2px);
+  transition: all 0.9s var(--ease-out);
+}
+
+.section-animate.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* ── NEW: Typing cursor for hero ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.typing-cursor::after {
+  content: '|';
+  animation: blink 1s step-end infinite;
+  color: var(--gold-500);
+  font-weight: 300;
+}
+
+/* ── NEW: SVG icon inline animation ── */
+.icon-svg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.icon-svg:hover {
+  transform: scale(1.15);
+}
+
+/* ── NEW: Underline draw animation for links ── */
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gold-500);
+  transition: width var(--duration-normal) var(--ease-out);
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* ── Primary Button Luxury Shine Sweep ── */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(25deg);
+  transition: none;
+  pointer-events: none;
+}
+
+.btn-primary:hover::before {
+  left: 140%;
+  transition: left 0.75s ease-in-out;
+}
+
+/* ── Floating Gentle Motion ── */
+@keyframes floatGentle {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+.float-animate {
+  animation: floatGentle 4s ease-in-out infinite;
+}
+
+/* ── Soft Glow Hover for Cards ── */
+.hover-lift {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.18), 0 0 20px rgba(212, 160, 23, 0.15);
+}
+
+/* ── Cart Badge Bounce on Add ── */
+@keyframes cartBadgeBounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.45) rotate(-10deg); }
+  60% { transform: scale(0.9) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.cart-bounce {
+  animation: cartBadgeBounce 0.5s ease-out;
+}
+
+/* ── Reduce motion preference ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .reveal,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale,
+  .section-animate {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  
+  .reveal-stagger > * {
+    opacity: 1;
+    transform: none;
+  }
+}

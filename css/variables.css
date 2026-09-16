@@ -1,0 +1,149 @@
+/* ============================================
+   VEDICFUELOON — CSS DESIGN TOKENS
+   Color palette, typography, spacing, shadows
+   ============================================ */
+
+:root {
+  /* ── Primary Colors (Deep Forest Green — Banana Leaf) ── */
+  --primary-900: #0D1F16;
+  --primary-800: #142E21;
+  --primary-700: #1B3A2D;
+  --primary-600: #234A38;
+  --primary-500: #2D5E3F;
+  --primary-400: #3D7A54;
+  --primary-300: #5A9E72;
+  --primary-200: #8CC4A0;
+  --primary-100: #C5E4D1;
+  --primary-50:  #EBF5EF;
+
+  /* ── Accent Gold (Temple Jewellery) ── */
+  --gold-900: #7A5A0A;
+  --gold-800: #9A720D;
+  --gold-700: #B8880F;
+  --gold-600: #D4A017;
+  --gold-500: #E5B420;
+  --gold-400: #F0C94D;
+  --gold-300: #F5D97A;
+  --gold-200: #FAE8A7;
+  --gold-100: #FDF3D4;
+  --gold-50:  #FFFBF0;
+
+  /* ── Accent Orange (Turmeric/Spice) ── */
+  --orange-600: #C06A1E;
+  --orange-500: #E07C24;
+  --orange-400: #E99A4F;
+  --orange-300: #F2B87A;
+  --orange-200: #F8D6A6;
+  --orange-100: #FDF0E0;
+
+  /* ── Cream (Rice / Kanji) ── */
+  --cream-900: #4A4335;
+  --cream-700: #8C8170;
+  --cream-500: #D4C9B5;
+  --cream-300: #EDE5D5;
+  --cream-200: #F0E8D8;
+  --cream-100: #F5EFE3;
+  --cream-50:  #FAF5EB;
+  --cream-white: #FFFDF8;
+
+  /* ── Neutral ── */
+  --neutral-900: #1A1A1A;
+  --neutral-800: #2D2D2D;
+  --neutral-700: #404040;
+  --neutral-600: #595959;
+  --neutral-500: #737373;
+  --neutral-400: #A0A0A0;
+  --neutral-300: #C4C4C4;
+  --neutral-200: #E0E0E0;
+  --neutral-100: #F0F0F0;
+  --neutral-50:  #FAFAFA;
+
+  /* ── Semantic ── */
+  --success: #27AE60;
+  --success-light: #E8F8EF;
+  --warning: #F2994A;
+  --warning-light: #FFF4E5;
+  --danger: #E74C3C;
+  --danger-light: #FDECEB;
+  --info: #2F80ED;
+  --info-light: #E8F0FD;
+
+  /* ── Typography ── */
+  --font-display: 'Playfair Display', 'Georgia', serif;
+  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-tamil: 'Noto Sans Tamil', 'Latha', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Font Sizes (fluid scale) */
+  --text-xs:   0.75rem;    /* 12px */
+  --text-sm:   0.875rem;   /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg:   1.125rem;   /* 18px */
+  --text-xl:   1.25rem;    /* 20px */
+  --text-2xl:  1.5rem;     /* 24px */
+  --text-3xl:  1.875rem;   /* 30px */
+  --text-4xl:  2.25rem;    /* 36px */
+  --text-5xl:  3rem;       /* 48px */
+  --text-6xl:  3.75rem;    /* 60px */
+
+  /* ── Spacing ── */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* ── Border Radius ── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  24px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:   0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg:   0 10px 25px rgba(0,0,0,0.1), 0 6px 10px rgba(0,0,0,0.08);
+  --shadow-xl:   0 20px 40px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.08);
+  --shadow-gold: 0 4px 20px rgba(212, 160, 23, 0.25);
+  --shadow-green:0 4px 20px rgba(45, 94, 63, 0.2);
+
+  /* ── Transitions ── */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast:   150ms;
+  --duration-normal: 300ms;
+  --duration-slow:   500ms;
+
+  /* ── Z-index ── */
+  --z-dropdown:  100;
+  --z-sticky:    200;
+  --z-overlay:   300;
+  --z-modal:     400;
+  --z-toast:     500;
+
+  /* ── Layout ── */
+  --container-max: 1280px;
+  --container-padding: var(--space-6);
+  --navbar-height: 72px;
+  --announcement-height: 40px;
+}
+
+/* ── Dark Mode Variables (for admin panel) ── */
+[data-theme="dark"] {
+  --bg-primary: var(--primary-900);
+  --bg-secondary: var(--primary-800);
+  --bg-surface: var(--primary-700);
+  --text-primary: var(--cream-50);
+  --text-secondary: var(--cream-300);
+  --border-color: var(--primary-600);
+}

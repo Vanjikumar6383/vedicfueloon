@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# Unwanted / Archive files not needed for deployment
+unwanted_files_not_for_deployment/
+
+# Local IDE and System files
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
