@@ -30,8 +30,8 @@ export const CATEGORIES = {
   },
   SOLID: { 
     id: 'solid-eats', 
-    name: 'Solid Eats', 
-    tamilName: 'திட உணவுகள் (பயறுகள் & முட்டை)', 
+    name: 'Healthy Snacks', 
+    tamilName: 'ஆரோக்கிய சிற்றுண்டிகள் (பயறுகள் & முட்டை)', 
     icon: 'salad', 
     count: 2,
     image: './images/cat_solid_eats.jpg',
@@ -39,6 +39,18 @@ export const CATEGORIES = {
     badge: 'Sprouts & Boiled Egg',
     chips: ['Sprouts Pulses', 'Boiled Egg', 'High Protein'],
     accent: '#8B4513'
+  },
+  SWEETS: { 
+    id: 'traditional-sweets', 
+    name: 'Traditional Sweets', 
+    tamilName: 'பாரம்பரிய இனிப்புகள் (உளுந்தங்களி)', 
+    icon: 'pot', 
+    count: 1,
+    image: './images/ulundhan_kali.jpg',
+    tagline: 'Authentic heritage sweets crafted with cold-pressed sesame oil, pure Karupatti (palm jaggery), and black urad dal.',
+    badge: 'Pure Palm Jaggery',
+    chips: ['Black Urad Dal', 'Pure Karupatti', 'Cold-Pressed Nallennai'],
+    accent: '#5A321E'
   }
 };
 
@@ -415,16 +427,32 @@ export const PRODUCTS = [
     inStock: true,
     stock: 35,
     image: './images/poitha_bath.jpg'
+  },
+  {
+    id: 24,
+    name: 'Ulundhan Kali',
+    tamilName: 'உளுந்தங்களி',
+    category: 'traditional-sweets',
+    price: 99,
+    originalPrice: 139,
+    description: 'Authentic traditional Tamil sweet made with whole black urad dal, pure palm jaggery (கருப்பட்டி), crushed cardamom, and pure cold-pressed sesame oil (நல்லெண்ணெய்). Deeply nourishing, rich in iron and calcium, passed down through generations.',
+    nutrition: { calories: '220', protein: '6.5g', fiber: '3.8g', iron: '24%', calcium: '18%', vitB: '16%' },
+    rating: 5.0,
+    reviews: 215,
+    badge: 'bestseller',
+    inStock: true,
+    stock: 40,
+    image: './images/ulundhan_kali.jpg'
   }
 ];
 
 export const TESTIMONIALS = [
   {
     id: 1,
-    text: 'The Sprouted Ragi Kanji takes me back to my grandmother\'s kitchen in Madurai. Authentic taste, pure ingredients. My whole family starts the day with VedicFueloon!',
+    text: 'The Sprouted Ragi Kanji takes me back to my grandmother\'s kitchen. Authentic taste, pure ingredients. My whole family starts the day with VedicFueloon!',
     name: 'Priya Shankar',
     tamilName: 'பிரியா சங்கர்',
-    location: 'Chennai, Tamil Nadu',
+    location: 'Coimbatore, Tamil Nadu',
     rating: 5,
     initial: 'P'
   },
@@ -439,19 +467,19 @@ export const TESTIMONIALS = [
   },
   {
     id: 3,
-    text: 'As a fitness enthusiast, I love the Sprouts Pulses bowl. High protein, clean ingredients, and the taste is absolutely incredible. Best health food brand!',
+    text: 'As a fitness enthusiast, I love the Sprouts Pulses bowl and Ulundhan Kali. High protein, clean ingredients, and the taste is absolutely incredible. Best health food brand!',
     name: 'Karthik Vel',
     tamilName: 'கார்த்திக் வேல்',
-    location: 'Madurai, Tamil Nadu',
+    location: 'Coimbatore, Tamil Nadu',
     rating: 5,
     initial: 'K'
   },
   {
     id: 4,
-    text: 'The Bamboo Kanji is a rare find! I\'ve never tasted anything like it. VedicFueloon brings forgotten Tamil recipes back to our dining table. Absolutely brilliant!',
+    text: 'The Bamboo Kanji and Ulundhan Kali are rare authentic finds! VedicFueloon brings forgotten Tamil recipes back to our dining table. Absolutely brilliant!',
     name: 'Lakshmi Devi',
     tamilName: 'லட்சுமி தேவி',
-    location: 'Trichy, Tamil Nadu',
+    location: 'Coimbatore, Tamil Nadu',
     rating: 5,
     initial: 'L'
   }

@@ -38,6 +38,7 @@ export const ICONS = {
   arrowRight: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`,
   arrowLeft: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>`,
   chevronRight: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>`,
+  chevronLeft: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>`,
   trash: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
   truck: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`,
   users: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
@@ -72,54 +73,65 @@ export const ICONS = {
 export function renderNavbar() {
   const cartCount = Cart.getCount();
   return `
-    <div class="announcement-bar">
-      <div class="announce-track">
-        <span class="announce-item"><span class="announce-icon">${ICONS.sparkle}</span> Free Delivery on orders above ₹499 | இலவச டெலிவரி ₹499 மேல்</span>
-        <span class="announce-divider">${ICONS.diamond}</span>
-        <span class="announce-item"><span class="announce-icon">${ICONS.leaf}</span> 100% Natural Ingredients | 100% இயற்கை பொருட்கள்</span>
-        <span class="announce-divider">${ICONS.diamond}</span>
-        <span class="announce-item"><span class="announce-icon">${ICONS.mortar}</span> Stone Ground Traditional Recipes | கல் உரல் அரைப்பு</span>
-        <span class="announce-divider">${ICONS.diamond}</span>
-        <span class="announce-item"><span class="announce-icon">${ICONS.sparkle}</span> Free Delivery on orders above ₹499 | இலவச டெலிவரி ₹499 மேல்</span>
-        <span class="announce-divider">${ICONS.diamond}</span>
-        <span class="announce-item"><span class="announce-icon">${ICONS.leaf}</span> 100% Natural Ingredients | 100% இயற்கை பொருட்கள்</span>
-        <span class="announce-divider">${ICONS.diamond}</span>
-        <span class="announce-item"><span class="announce-icon">${ICONS.mortar}</span> Stone Ground Traditional Recipes | கல் உரல் அரைப்பு</span>
+    <header class="site-header-fixed" id="siteHeader">
+      <div class="announcement-bar">
+        <div class="announce-track">
+          <span class="announce-item"><span class="announce-icon">${ICONS.leaf}</span> 100% Natural Ingredients | 100% இயற்கை பொருட்கள்</span>
+          <span class="announce-divider">${ICONS.diamond}</span>
+          <span class="announce-item"><span class="announce-icon">${ICONS.mortar}</span> Stone Ground Traditional Recipes | கல் உரல் அரைப்பு</span>
+          <span class="announce-divider">${ICONS.diamond}</span>
+          <span class="announce-item"><span class="announce-icon">${ICONS.pot}</span> Traditional Tamil Health Foods | பாரம்பரிய தமிழ் உணவு</span>
+          <span class="announce-divider">${ICONS.diamond}</span>
+          <span class="announce-item"><span class="announce-icon">${ICONS.leaf}</span> 100% Natural Ingredients | 100% இயற்கை பொருட்கள்</span>
+          <span class="announce-divider">${ICONS.diamond}</span>
+          <span class="announce-item"><span class="announce-icon">${ICONS.mortar}</span> Stone Ground Traditional Recipes | கல் உரல் அரைப்பு</span>
+          <span class="announce-divider">${ICONS.diamond}</span>
+          <span class="announce-item"><span class="announce-icon">${ICONS.pot}</span> Traditional Tamil Health Foods | பாரம்பரிய தமிழ் உணவு</span>
+        </div>
       </div>
-    </div>
-    <nav class="navbar" id="navbar">
-      <div class="container">
-        <a href="#/" class="navbar-brand" id="mainNavBrand" title="VedicFueloon — Home (Double-click to open Admin Panel)">
-          <img src="./vedicfueloon-emblem.png" alt="VedicFueloon Logo" class="brand-logo" />
-          <div class="brand-info">
-            <div class="brand-name">Vedic<span>Fueloon</span></div>
-            <div class="brand-tagline d-none d-sm-block">Power in Every Bite</div>
+      <nav class="navbar" id="navbar">
+        <div class="container">
+          <a href="#/" class="navbar-brand" id="mainNavBrand" title="VedicFueloon — Home (Double-click to open Admin Panel)">
+            <div class="brand-logo-wrap" title="VedicFueloon">
+              <img 
+                id="navbarLogoImg"
+                class="brand-logo-animated" 
+                src="./vedicfueloon_logo_animated.webp" 
+                alt="VedicFueloon Animated Logo" 
+                loading="eager"
+                onerror="this.onerror=null;this.src='./vedicfueloon-emblem.png';"
+              />
+            </div>
+            <div class="brand-info">
+              <div class="brand-name">Vedic<span>Fueloon</span></div>
+              <div class="brand-tagline d-none d-sm-block">Power in Every Bite</div>
+            </div>
+          </a>
+          
+          <div class="nav-links" id="navLinks">
+            <a href="#/" class="nav-link" data-page="home">Home</a>
+            <a href="#/shop" class="nav-link" data-page="shop">Kanji & Menu</a>
+            <a href="#/about" class="nav-link" data-page="about">Our Story</a>
+            <a href="#/contact" class="nav-link" data-page="contact">Contact</a>
+            <a href="#/admin" class="nav-link d-md-none nav-link-mobile-admin" data-page="admin">${ICONS.settings} Admin Portal</a>
           </div>
-        </a>
-        
-        <div class="nav-links" id="navLinks">
-          <a href="#/" class="nav-link" data-page="home">Home</a>
-          <a href="#/shop" class="nav-link" data-page="shop">Kanji & Menu</a>
-          <a href="#/about" class="nav-link" data-page="about">Our Story</a>
-          <a href="#/contact" class="nav-link" data-page="contact">Contact</a>
-          <a href="#/admin" class="nav-link d-md-none nav-link-mobile-admin" data-page="admin">${ICONS.settings} Admin Portal</a>
+          
+          <div class="nav-actions">
+            <a href="#/admin" class="nav-admin-link d-none d-md-inline-flex" title="Admin Portal">${ICONS.settings} Admin</a>
+            <button class="nav-cart-btn btn-ripple" id="navCartBtn" onclick="location.hash='#/cart'" title="View Shopping Cart">
+              <span class="cart-icon">${ICONS.cart}</span>
+              <span class="cart-text d-none d-sm-inline">Cart</span>
+              <span class="cart-count" id="cartCount">${cartCount}</span>
+            </button>
+            <button class="mobile-toggle d-flex d-md-none" id="mobileToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+              <span></span><span></span><span></span>
+            </button>
+          </div>
         </div>
-        
-        <div class="nav-actions">
-          <a href="#/admin" class="nav-admin-link d-none d-md-inline-flex" title="Admin Portal">${ICONS.settings} Admin</a>
-          <button class="nav-cart-btn btn-ripple" id="navCartBtn" onclick="location.hash='#/cart'" title="View Shopping Cart">
-            <span class="cart-icon">${ICONS.cart}</span>
-            <span class="cart-text d-none d-sm-inline">Cart</span>
-            <span class="cart-count" id="cartCount">${cartCount}</span>
-          </button>
-          <button class="mobile-toggle d-flex d-md-none" id="mobileToggle" aria-label="Toggle navigation menu" aria-expanded="false">
-            <span></span><span></span><span></span>
-          </button>
-        </div>
-      </div>
-      <!-- Continuous Flower Petals Garland along the bottom edge -->
-      <div class="navbar-petal-border" aria-hidden="true"></div>
-    </nav>
+        <!-- Continuous Flower Petals Garland along the bottom edge -->
+        <div class="navbar-petal-border" aria-hidden="true"></div>
+      </nav>
+    </header>
   `;
 }
 

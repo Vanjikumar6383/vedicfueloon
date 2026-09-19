@@ -140,8 +140,9 @@
   flex-wrap: wrap;
 }
 
-/* ── Hero Logo Video Showcase (Clean, Pure, Zero Labels) ── */
-.hero-video-wrapper {
+/* ── Hero Logo Video Showcase & Top-Selling Products Slideshow ── */
+.hero-video-wrapper,
+.hero-slider-wrapper {
   position: relative;
   display: flex;
   justify-content: center;
@@ -151,22 +152,24 @@
   margin-left: auto;
 }
 
-.hero-video-card {
+.hero-video-card,
+.hero-slider-card {
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: var(--radius-2xl);
   overflow: hidden;
   position: relative;
-  background: #FAF5EB;
-  border: 1.5px solid rgba(212, 160, 23, 0.4);
+  background: #1B3A2D;
+  border: 1.5px solid rgba(212, 160, 23, 0.45);
   box-shadow: 
     0 24px 50px -10px rgba(0, 0, 0, 0.4),
     0 0 35px rgba(212, 160, 23, 0.2),
-    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+    inset 0 1px 2px rgba(255, 255, 255, 0.4);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
 }
 
-.hero-video-card:hover {
+.hero-video-card:hover,
+.hero-slider-card:hover {
   transform: translateY(-6px) scale(1.01);
   box-shadow: 
     0 30px 60px -10px rgba(0, 0, 0, 0.5),
@@ -181,6 +184,237 @@
   border-radius: calc(var(--radius-2xl) - 2px);
   background: #FAF5EB;
   pointer-events: none;
+}
+
+/* ── Hero Slideshow Components ── */
+.hero-slides-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(1.03);
+  pointer-events: none;
+}
+
+.hero-slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.hero-slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: calc(var(--radius-2xl) - 2px);
+}
+
+.hero-slide-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg, 
+    rgba(10, 28, 19, 0.35) 0%, 
+    transparent 35%, 
+    rgba(10, 28, 19, 0.72) 65%, 
+    rgba(10, 28, 19, 0.95) 100%
+  );
+  pointer-events: none;
+}
+
+.hero-slide-top-bar {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  right: var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+
+.hero-slide-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(10, 28, 19, 0.82);
+  border: 1px solid rgba(212, 160, 23, 0.5);
+  color: var(--gold-400);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 11px;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hero-slide-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(212, 160, 23, 0.95);
+  color: #1B3A2D;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.hero-slide-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  z-index: 2;
+  color: var(--cream-100);
+}
+
+.hero-slide-title-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.hero-slide-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.25;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.hero-slide-tamil {
+  font-family: var(--font-tamil);
+  font-size: var(--text-xs);
+  color: var(--gold-400);
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.hero-slide-price-box {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.hero-slide-price {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  color: var(--gold-400);
+  line-height: 1;
+}
+
+.hero-slide-original-price {
+  font-size: 11px;
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.6);
+  display: block;
+  margin-top: 2px;
+}
+
+.hero-slide-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-3);
+  gap: var(--space-2);
+}
+
+.hero-slide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--gold-500);
+  color: #1B3A2D;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(212, 160, 23, 0.35);
+}
+
+.hero-slide-btn:hover {
+  background: #E5B32A;
+  color: #11281E;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(212, 160, 23, 0.5);
+}
+
+.hero-slider-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(10, 28, 19, 0.65);
+  border: 1px solid rgba(212, 160, 23, 0.45);
+  color: var(--gold-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.hero-slider-nav-btn:hover {
+  background: rgba(212, 160, 23, 0.95);
+  color: #1B3A2D;
+  border-color: var(--gold-500);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.hero-slider-prev {
+  left: var(--space-3);
+}
+
+.hero-slider-next {
+  right: var(--space-3);
+}
+
+.hero-slider-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.hero-slider-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-slider-dot.active {
+  width: 18px;
+  background: var(--gold-400);
+  box-shadow: 0 0 8px rgba(212, 160, 23, 0.6);
 }
 
 /* ── Hero Showcase Card with Logo & Floating Badges ── */
@@ -1313,7 +1547,8 @@
   }
   
   .hero-card,
-  .hero-video-wrapper {
+  .hero-video-wrapper,
+  .hero-slider-wrapper {
     margin: var(--space-8) auto 0;
     max-width: 380px;
   }
@@ -1353,7 +1588,8 @@
   }
 
   .hero-card,
-  .hero-video-wrapper {
+  .hero-video-wrapper,
+  .hero-slider-wrapper {
     max-width: 340px;
     margin-top: var(--space-6);
   }

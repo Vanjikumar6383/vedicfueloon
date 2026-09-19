@@ -20,7 +20,8 @@ export function renderShopPage(params = {}) {
     'all': ICONS.list,
     'kanji': ICONS.bowl,
     'daily-spl': ICONS.sparkle,
-    'solid-eats': ICONS.salad
+    'solid-eats': ICONS.salad,
+    'traditional-sweets': ICONS.pot
   };
 
   return `

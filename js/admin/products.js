@@ -111,7 +111,8 @@ export function renderAdminProducts() {
           <select class="form-select" id="prodCategory">
             <option value="kanji">Kanji Varieties</option>
             <option value="daily-spl">Daily Special</option>
-            <option value="solid-eats">Solid Eats</option>
+            <option value="solid-eats">Healthy Snacks</option>
+            <option value="traditional-sweets">Traditional Sweets</option>
           </select>
         </div>
         

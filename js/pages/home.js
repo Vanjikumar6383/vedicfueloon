@@ -33,25 +33,50 @@ export function renderHomePage() {
               <a href="#/shop" class="btn btn-primary btn-lg btn-ripple">
                 ${ICONS.bowl} Shop Kanji (கஞ்சி வாங்க)
               </a>
-              <a href="#/about" class="btn btn-ghost btn-lg btn-ripple">
-                Explore Our Story ${ICONS.arrowRight}
-              </a>
             </div>
           </div>
-          <div class="hero-video-wrapper parallax-float">
-            <div class="hero-video-card">
-              <video 
-                id="heroLogoVideo"
-                class="hero-logo-video" 
-                autoplay 
-                muted 
-                playsinline 
-                webkit-playsinline
-                preload="auto"
-                title="VedicFueloon animated logo (Repeats every 10 seconds)">
-                <source src="./images/logo.mp4" type="video/mp4" />
-                <source src="./logo.mp4" type="video/mp4" />
-              </video>
+          <div class="hero-slider-wrapper parallax-float" id="heroProductSlider">
+            <div class="hero-slider-card">
+              <div class="hero-slides-container">
+                ${featuredProducts.map((p, idx) => `
+                  <div class="hero-slide ${idx === 0 ? 'active' : ''}" data-slide-index="${idx}">
+                    <img src="${p.image}" alt="${p.name}" class="hero-slide-img" loading="${idx === 0 ? 'eager' : 'lazy'}" />
+                    <div class="hero-slide-overlay"></div>
+                    <div class="hero-slide-top-bar">
+                      <span class="hero-slide-badge">${ICONS.fire} TOP SELLER</span>
+                      <span class="hero-slide-rating">★ ${p.rating}</span>
+                    </div>
+                    <div class="hero-slide-info">
+                      <div class="hero-slide-title-row">
+                        <div>
+                          <h3 class="hero-slide-title">${p.name}</h3>
+                          <div class="hero-slide-tamil">${p.tamilName}</div>
+                        </div>
+                        <div class="hero-slide-price-box">
+                          <span class="hero-slide-price">₹${p.price}</span>
+                          ${p.originalPrice ? `<span class="hero-slide-original-price">₹${p.originalPrice}</span>` : ''}
+                        </div>
+                      </div>
+                      <div class="hero-slide-action-row">
+                        <a href="#/product/${p.id}" class="hero-slide-btn btn-ripple">
+                          ${ICONS.bowl} Order Now
+                        </a>
+                        <div class="hero-slider-dots">
+                          ${featuredProducts.map((_, dotIdx) => `
+                            <button class="hero-slider-dot ${dotIdx === idx ? 'active' : ''}" data-dot-index="${dotIdx}" aria-label="Go to slide ${dotIdx + 1}"></button>
+                          `).join('')}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+              <button class="hero-slider-nav-btn hero-slider-prev" id="heroSlidePrev" aria-label="Previous Slide">
+                ${ICONS.chevronLeft}
+              </button>
+              <button class="hero-slider-nav-btn hero-slider-next" id="heroSlideNext" aria-label="Next Slide">
+                ${ICONS.chevronRight}
+              </button>
             </div>
           </div>
         </div>
@@ -77,37 +102,6 @@ export function renderHomePage() {
       </div>
     </section>
 
-    <!-- Trust Badges -->
-    <section class="section section-scroll-blur">
-      <div class="container">
-        <div class="grid-4 reveal-stagger" id="trustBadges">
-          <div class="trust-card glow-border">
-            <div class="trust-icon" style="color: var(--primary-500);">${ICONS.leaf}</div>
-            <div class="trust-value counter" data-target="100">100%</div>
-            <div class="trust-label">Natural Ingredients</div>
-            <div class="trust-tamil tamil-text">இயற்கை பொருட்கள்</div>
-          </div>
-          <div class="trust-card glow-border">
-            <div class="trust-icon" style="color: var(--gold-600);">${ICONS.pot}</div>
-            <div class="trust-value">Zero</div>
-            <div class="trust-label">Artificial Preservatives</div>
-            <div class="trust-tamil tamil-text">செயற்கை நிறமிகள்</div>
-          </div>
-          <div class="trust-card glow-border">
-            <div class="trust-icon" style="color: var(--orange-500);">${ICONS.mortar}</div>
-            <div class="trust-value">Stone Mortar</div>
-            <div class="trust-label">Ground Fresh Daily</div>
-            <div class="trust-tamil tamil-text">கல் உரலில் அரைத்தது</div>
-          </div>
-          <div class="trust-card glow-border">
-            <div class="trust-icon" style="color: var(--primary-400);">${ICONS.users}</div>
-            <div class="trust-value counter" data-target="500">500+</div>
-            <div class="trust-label">Happy Customers</div>
-            <div class="trust-tamil tamil-text">மகிழ்ச்சியான வாடிக்கையாளர்கள்</div>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- Categories Section -->
     <section class="section section-cream kolam-bg section-scroll-blur" id="categoriesSection">
@@ -122,7 +116,7 @@ export function renderHomePage() {
         <div class="category-filter-nav reveal">
           <button class="category-filter-pill active" onclick="location.hash='#/shop'">
             <span>${ICONS.list} All Items</span>
-            <span class="pill-badge">24</span>
+            <span class="pill-badge">25</span>
           </button>
           <button class="category-filter-pill" onclick="location.hash='#/shop?category=kanji'">
             <span>${ICONS.bowl} Kanji Varieties</span>
@@ -133,13 +127,17 @@ export function renderHomePage() {
             <span class="pill-badge">1</span>
           </button>
           <button class="category-filter-pill" onclick="location.hash='#/shop?category=solid-eats'">
-            <span>${ICONS.salad} Solid Eats</span>
+            <span>${ICONS.salad} Healthy Snacks</span>
             <span class="pill-badge">2</span>
+          </button>
+          <button class="category-filter-pill" onclick="location.hash='#/shop?category=traditional-sweets'">
+            <span>${ICONS.pot} Traditional Sweets</span>
+            <span class="pill-badge">1</span>
           </button>
         </div>
 
         <!-- Rich Visual Category Cards -->
-        <div class="grid-3 reveal-stagger">
+        <div class="grid-4 reveal-stagger">
           ${Object.values(CATEGORIES).map(cat => {
             const isDaily = cat.id === 'daily-spl';
             const catImage = isDaily ? (dailySpecial.image || cat.image) : cat.image;
@@ -158,7 +156,7 @@ export function renderHomePage() {
               <!-- Top Bar -->
               <div class="cat-top-bar">
                 <span class="cat-badge-pill">
-                  ${cat.id === 'kanji' ? ICONS.pot : isDaily ? ICONS.sparkle : ICONS.salad}
+                  ${cat.id === 'kanji' ? ICONS.pot : isDaily ? ICONS.sparkle : cat.id === 'traditional-sweets' ? ICONS.pot : ICONS.salad}
                   ${isDaily ? 'Today\'s Special' : cat.badge}
                 </span>
                 <span class="cat-count-pill">${cat.count} ITEMS</span>
@@ -171,7 +169,7 @@ export function renderHomePage() {
                 <p class="cat-desc">${catDesc}</p>
 
                 ${cat.id === 'solid-eats' ? `
-                  <!-- Dual Preview of the 2 Solid Eats: Sprouts Pulses & Boiled Egg -->
+                  <!-- Dual Preview of Healthy Snacks: Sprouts Pulses & Boiled Egg -->
                   <div class="cat-dual-preview">
                     <div class="dual-thumb" onclick="event.stopPropagation(); location.hash='#/product/21';" title="View Sprouted Pulses">
                       <img src="./images/sprouts_pulses.jpg" alt="Sprouts Pulses" />
@@ -185,6 +183,17 @@ export function renderHomePage() {
                       <div>
                         <div class="dual-thumb-name">Boiled Egg</div>
                         <div class="dual-thumb-tamil tamil-text">அவித்த முட்டை</div>
+                      </div>
+                    </div>
+                  </div>
+                ` : cat.id === 'traditional-sweets' ? `
+                  <!-- Preview of Traditional Sweets: Ulundhan Kali -->
+                  <div class="cat-dual-preview">
+                    <div class="dual-thumb" onclick="event.stopPropagation(); location.hash='#/product/24';" title="View Ulundhan Kali">
+                      <img src="./images/ulundhan_kali.jpg" alt="Ulundhan Kali" />
+                      <div>
+                        <div class="dual-thumb-name">Ulundhan Kali (₹99)</div>
+                        <div class="dual-thumb-tamil tamil-text">உளுந்தங்களி · ⭐ 5.0</div>
                       </div>
                     </div>
                   </div>
@@ -216,11 +225,11 @@ export function renderHomePage() {
           `;}).join('')}
         </div>
 
-        <!-- Dedicated Solid Eats Protein Spotlight (Sprouted Pulses + Boiled Egg) -->
+        <!-- Dedicated Healthy Snacks Spotlight (Sprouted Pulses + Boiled Egg) -->
         <div class="solid-eats-spotlight reveal" style="margin-top: var(--space-8); background: white; border: 1.5px solid rgba(212, 160, 23, 0.28); border-radius: var(--radius-2xl); padding: var(--space-6) var(--space-8); box-shadow: 0 10px 28px rgba(0,0,0,0.06);">
           <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:var(--space-4); margin-bottom: var(--space-6);">
             <div>
-              <span class="section-badge">${ICONS.salad} SOLID EATS SPOTLIGHT (திட உணவுகள்)</span>
+              <span class="section-badge">${ICONS.salad} HEALTHY SNACKS SPOTLIGHT (ஆரோக்கிய சிற்றுண்டிகள்)</span>
               <h3 style="font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 800; color: var(--primary-900); margin: var(--space-1) 0;">
                 Sprouted Pulses & Farm-Fresh Boiled Eggs
               </h3>
@@ -229,12 +238,34 @@ export function renderHomePage() {
               </p>
             </div>
             <a href="#/shop?category=solid-eats" class="btn btn-outline btn-sm btn-ripple">
-              View Solid Eats Menu ${ICONS.arrowRight}
+              View Healthy Snacks Menu ${ICONS.arrowRight}
             </a>
           </div>
 
           <div class="grid-2 reveal-stagger">
             ${PRODUCTS.filter(p => p.category === 'solid-eats').map(p => renderProductCard(p)).join('')}
+          </div>
+        </div>
+
+        <!-- Dedicated Traditional Sweets Spotlight (Ulundhan Kali) -->
+        <div class="traditional-sweets-spotlight reveal" style="margin-top: var(--space-8); background: white; border: 1.5px solid rgba(212, 160, 23, 0.28); border-radius: var(--radius-2xl); padding: var(--space-6) var(--space-8); box-shadow: 0 10px 28px rgba(0,0,0,0.06);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:var(--space-4); margin-bottom: var(--space-6);">
+            <div>
+              <span class="section-badge">${ICONS.pot} TRADITIONAL SWEETS (பாரம்பரிய இனிப்புகள்)</span>
+              <h3 style="font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 800; color: var(--primary-900); margin: var(--space-1) 0;">
+                Traditional Sweets · பாரம்பரிய உளுந்தங்களி
+              </h3>
+              <p class="tamil-text" style="color: var(--gold-700); font-size: var(--text-sm);">
+                கருப்பு உளுந்து, சுத்தமான கருப்பட்டி & செக்கு நல்லெண்ணெய் கொண்டு பாரம்பரிய முறையில் தயார் செய்யப்பட்டது
+              </p>
+            </div>
+            <a href="#/shop?category=traditional-sweets" class="btn btn-outline btn-sm btn-ripple">
+              View Sweets Menu ${ICONS.arrowRight}
+            </a>
+          </div>
+
+          <div class="grid-products reveal-stagger">
+            ${PRODUCTS.filter(p => p.category === 'traditional-sweets').map(p => renderProductCard(p)).join('')}
           </div>
         </div>
 
@@ -423,9 +454,6 @@ export function renderHomePage() {
         </p>
         <div style="display:flex; gap:var(--space-4); justify-content:center; flex-wrap:wrap; align-items:center;">
           <a href="#/shop" class="btn btn-primary btn-lg btn-ripple">${ICONS.bowl} Order Now</a>
-          <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20order%20from%20VedicFueloon" target="_blank" rel="noopener" class="btn btn-ghost btn-lg btn-ripple" style="display:inline-flex; align-items:center; gap:8px;">
-            <span style="width:24px; height:24px; display:inline-block;">${ICONS.realWhatsapp}</span> WhatsApp Order
-          </a>
           <a href="https://instagram.com/vedicfueloon" target="_blank" rel="noopener" class="btn btn-ghost btn-lg btn-ripple" style="display:inline-flex; align-items:center; gap:8px;">
             <span style="width:24px; height:24px; display:inline-block;">${ICONS.realInstagram}</span> Instagram DM
           </a>
@@ -433,47 +461,158 @@ export function renderHomePage() {
       </div>
     </section>
 
-    <!-- Floating WhatsApp Instant Quick Connect -->
-    <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20order%20from%20VedicFueloon" target="_blank" rel="noopener" class="floating-wa-btn" title="Chat with us on WhatsApp" aria-label="WhatsApp Quick Order">
-      <span class="wa-tooltip">Chat on WhatsApp</span>
-      <span style="width:32px; height:32px; display:inline-block;">${ICONS.realWhatsapp}</span>
-    </a>
+    <!-- Trust Badges (Positioned as the last screen below Ready to Taste Tradition) -->
+    <section class="section section-cream kolam-bg section-scroll-blur" style="padding: var(--space-16) 0 var(--space-12); border-top: 1px solid rgba(212, 160, 23, 0.18);">
+      <div class="container">
+        <div class="grid-4 reveal-stagger" id="trustBadges">
+          <div class="trust-card glow-border">
+            <div class="trust-icon" style="color: var(--primary-500);">${ICONS.leaf}</div>
+            <div class="trust-value counter" data-target="100">100%</div>
+            <div class="trust-label">Natural Ingredients</div>
+            <div class="trust-tamil tamil-text">இயற்கை பொருட்கள்</div>
+          </div>
+          <div class="trust-card glow-border">
+            <div class="trust-icon" style="color: var(--gold-600);">${ICONS.pot}</div>
+            <div class="trust-value">Zero</div>
+            <div class="trust-label">Artificial Preservatives</div>
+            <div class="trust-tamil tamil-text">செயற்கை நிறமிகள்</div>
+          </div>
+          <div class="trust-card glow-border">
+            <div class="trust-icon" style="color: var(--orange-500);">${ICONS.mortar}</div>
+            <div class="trust-value">Stone Mortar</div>
+            <div class="trust-label">Ground Fresh Daily</div>
+            <div class="trust-tamil tamil-text">கல் உரலில் அரைத்தது</div>
+          </div>
+          <div class="trust-card glow-border">
+            <div class="trust-icon" style="color: var(--primary-400);">${ICONS.users}</div>
+            <div class="trust-value counter" data-target="500">500+</div>
+            <div class="trust-label">Happy Customers</div>
+            <div class="trust-tamil tamil-text">மகிழ்ச்சியான வாடிக்கையாளர்கள்</div>
+          </div>
+        </div>
+      </div>
+    </section>
   `;
 }
 
-// ── Setup Hero Video Repeat Every 10 Seconds ──
+// ── Setup Hero Slideshow (Auto-advancing with manual navigation) ──
 export function initHomeHandlers() {
-  const video = document.getElementById('heroLogoVideo') || document.querySelector('.hero-logo-video');
-  if (!video) return;
+  const slider = document.getElementById('heroProductSlider');
+  if (!slider) return;
 
-  if (window._heroVideoInterval) {
-    clearInterval(window._heroVideoInterval);
-    window._heroVideoInterval = null;
+  if (window._heroSliderInterval) {
+    clearInterval(window._heroSliderInterval);
+    window._heroSliderInterval = null;
   }
 
-  const playVideo = () => {
-    video.currentTime = 0;
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {});
+  const slides = slider.querySelectorAll('.hero-slide');
+  if (!slides || slides.length === 0) return;
+
+  let currentIndex = 0;
+  const totalSlides = slides.length;
+
+  function showSlide(index) {
+    if (index < 0) {
+      currentIndex = totalSlides - 1;
+    } else if (index >= totalSlides) {
+      currentIndex = 0;
+    } else {
+      currentIndex = index;
     }
-  };
 
-  // Ensure initial play
-  playVideo();
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === currentIndex);
+    });
 
-  // Repeat every 10 seconds
-  window._heroVideoInterval = setInterval(() => {
-    if (!document.body.contains(video)) {
-      clearInterval(window._heroVideoInterval);
-      window._heroVideoInterval = null;
-      return;
+    // Sync all dots
+    slider.querySelectorAll('.hero-slider-dot').forEach(dot => {
+      const dotIdx = parseInt(dot.getAttribute('data-dot-index'), 10);
+      dot.classList.toggle('active', dotIdx === currentIndex);
+    });
+  }
+
+  function nextSlide() {
+    showSlide(currentIndex + 1);
+  }
+
+  function prevSlide() {
+    showSlide(currentIndex - 1);
+  }
+
+  function startAutoPlay() {
+    stopAutoPlay();
+    window._heroSliderInterval = setInterval(() => {
+      if (!document.body.contains(slider)) {
+        stopAutoPlay();
+        return;
+      }
+      nextSlide();
+    }, 3500);
+  }
+
+  function stopAutoPlay() {
+    if (window._heroSliderInterval) {
+      clearInterval(window._heroSliderInterval);
+      window._heroSliderInterval = null;
     }
-    playVideo();
-  }, 10000);
+  }
 
-  video.style.cursor = 'pointer';
-  video.onclick = () => {
-    playVideo();
-  };
+  // Prev & Next buttons
+  const prevBtn = slider.querySelector('#heroSlidePrev');
+  const nextBtn = slider.querySelector('#heroSlideNext');
+
+  if (prevBtn) {
+    prevBtn.onclick = (e) => {
+      e.stopPropagation();
+      prevSlide();
+      startAutoPlay();
+    };
+  }
+
+  if (nextBtn) {
+    nextBtn.onclick = (e) => {
+      e.stopPropagation();
+      nextSlide();
+      startAutoPlay();
+    };
+  }
+
+  // Dot clicks
+  slider.querySelectorAll('.hero-slider-dot').forEach(dot => {
+    dot.onclick = (e) => {
+      e.stopPropagation();
+      const dotIdx = parseInt(dot.getAttribute('data-dot-index'), 10);
+      if (!isNaN(dotIdx)) {
+        showSlide(dotIdx);
+        startAutoPlay();
+      }
+    };
+  });
+
+  // Pause on hover
+  slider.addEventListener('mouseenter', stopAutoPlay);
+  slider.addEventListener('mouseleave', startAutoPlay);
+
+  // Touch swipe support for mobile
+  let touchStartX = 0;
+  slider.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].clientX;
+    stopAutoPlay();
+  }, { passive: true });
+
+  slider.addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const diffX = touchStartX - touchEndX;
+    if (Math.abs(diffX) > 40) {
+      if (diffX > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+    }
+    startAutoPlay();
+  }, { passive: true });
+
+  // Start auto play
+  startAutoPlay();
 }

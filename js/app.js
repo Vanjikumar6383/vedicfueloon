@@ -114,12 +114,24 @@ function handleRoute() {
   setupMobileMenu();
   setupProductCardClicks();
   
-  // Initialize home video repeating timer
+  // Ensure animated logo is ready
+  const navVideo = document.getElementById('navbarLogoVideo');
+  if (navVideo && typeof navVideo.play === 'function' && navVideo.paused) {
+    navVideo.play().catch(() => {});
+  }
+  
+  // Initialize home handlers / slideshow
   if (activePage === 'home') {
     initHomeHandlers();
-  } else if (window._heroVideoInterval) {
-    clearInterval(window._heroVideoInterval);
-    window._heroVideoInterval = null;
+  } else {
+    if (window._heroVideoInterval) {
+      clearInterval(window._heroVideoInterval);
+      window._heroVideoInterval = null;
+    }
+    if (window._heroSliderInterval) {
+      clearInterval(window._heroSliderInterval);
+      window._heroSliderInterval = null;
+    }
   }
   
   // Scroll to top

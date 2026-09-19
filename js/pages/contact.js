@@ -126,9 +126,9 @@ export function renderContactPage() {
                      target="_blank" rel="noopener" class="prompt-chip">
                     ${ICONS.bowl} Order Today's Kanji
                   </a>
-                  <a href="https://wa.me/919876543210?text=Hi!%20I%20want%20to%20order%20Solid%20Eats%20(Sprouts%20Pulses%20and%20Boiled%20Egg)." 
+                  <a href="https://wa.me/919876543210?text=Hi!%20I%20want%20to%20order%20Healthy%20Snacks%20(Sprouts%20Pulses%20and%20Boiled%20Egg)." 
                      target="_blank" rel="noopener" class="prompt-chip">
-                    ${ICONS.salad} Order Solid Eats
+                    ${ICONS.salad} Order Healthy Snacks
                   </a>
                   <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20inquire%20about%20bulk%20catering%20for%20a%20family%20event." 
                      target="_blank" rel="noopener" class="prompt-chip">
@@ -242,7 +242,8 @@ export function renderContactPage() {
               <label class="form-label">Select Communication Topic (தலைப்பு)</label>
               <select class="form-input" id="waComposerTopic" style="cursor: pointer;">
                 <option value="Fresh Kanji Order">Place Fresh Kanji Order (கஞ்சி ஆர்டர்)</option>
-                <option value="Solid Eats Order">Order Sprouts Pulses & Boiled Egg (திட உணவுகள்)</option>
+                <option value="Healthy Snacks Order">Order Healthy Snacks: Sprouts & Eggs (ஆரோக்கிய சிற்றுண்டிகள்)</option>
+                <option value="Traditional Sweets Order">Order Traditional Sweets: Ulundhan Kali (பாரம்பரிய இனிப்புகள்)</option>
                 <option value="Dietary Guidance">Dietary & Herbal Nutrition Guidance (ஊட்டச்சத்து விவரம்)</option>
                 <option value="Bulk Catering">Bulk Event / Family Gathering Catering (நிகழ்வு ஆர்டர்)</option>
                 <option value="General Inquiry">General Question & Feedback (பொதுவான விவரம்)</option>
