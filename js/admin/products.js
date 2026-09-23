@@ -1,35 +1,72 @@
 /* ============================================
-   VEDICFUELOON — ADMIN PRODUCTS
-   Product CRUD Management
+   VEDICFUELOON — ADMIN PRODUCTS & STOCK MANAGEMENT
+   Product CRUD, Real-Time Stock Editing, Daily Special
    ============================================ */
 
-import { PRODUCTS } from '../data.js';
-import { DailySpecialStore } from '../store.js';
+import { ProductsStore, DailySpecialStore } from '../store.js';
 import { showToast, formatPrice, ICONS } from '../components.js';
 
-// We use a mutable copy so admin edits persist in session
-let productsList = [...PRODUCTS];
-
 export function getAdminProducts() {
-  return productsList;
+  return ProductsStore.get();
 }
 
 export function renderAdminProducts() {
+  const productsList = ProductsStore.get();
   const currentSpecialId = DailySpecialStore.getId();
+  
+  const totalStock = productsList.reduce((sum, p) => sum + (parseInt(p.stock) || 0), 0);
+  const lowStockCount = productsList.filter(p => (parseInt(p.stock) || 0) <= 15).length;
+
   return `
     <div class="admin-header">
       <div>
-        <h1>Products</h1>
-        <p style="color:var(--neutral-500); font-size:var(--text-sm);">Manage your product catalog & Daily Special</p>
+        <div class="admin-badge-live">
+          <span class="admin-live-pulse"></span>
+          REAL-TIME INVENTORY CONTROL
+        </div>
+        <h1 style="margin-top:6px;">Products & Stock Management</h1>
+        <p style="color:var(--cream-300); font-size:var(--text-sm);">
+          Update available stock levels, manage product catalog, and set the Daily Special
+        </p>
       </div>
-      <button class="btn btn-primary" onclick="window.openProductModal()">+ Add Product</button>
+
+      <div class="admin-header-actions">
+        <button class="btn btn-primary btn-ripple" onclick="window.openProductModal()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          + Add Product
+        </button>
+      </div>
+    </div>
+
+    <!-- Inventory Quick Stats -->
+    <div class="stats-grid" style="grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); margin-bottom:var(--space-6);">
+      <div class="stat-card" style="padding:var(--space-4);">
+        <div class="stat-label">Total Catalog Products</div>
+        <div class="stat-value" style="font-size:24px; color:#FFF8E7;">${productsList.length}</div>
+        <div class="admin-kpi-subtext">Active Recipes & Items</div>
+      </div>
+      <div class="stat-card" style="padding:var(--space-4);">
+        <div class="stat-label">Total Units in Stock</div>
+        <div class="stat-value" style="font-size:24px; color:var(--gold-400);">${totalStock}</div>
+        <div class="admin-kpi-subtext">Across All Categories</div>
+      </div>
+      <div class="stat-card" style="padding:var(--space-4);">
+        <div class="stat-label">Low Stock Alerts</div>
+        <div class="stat-value" style="font-size:24px; color:${lowStockCount > 0 ? '#e67e22' : '#2ecc71'};">${lowStockCount}</div>
+        <div class="admin-kpi-subtext">≤ 15 units remaining</div>
+      </div>
     </div>
 
     <div class="admin-table-container">
-      <div class="admin-table-header">
-        <h3>${ICONS.bowl} All Products (${productsList.length})</h3>
+      <div class="admin-table-header" style="flex-wrap:wrap; gap:var(--space-3);">
+        <div>
+          <h3>${ICONS.bowl} All Products & Stock Levels</h3>
+          <p style="font-size:var(--text-xs); color:var(--cream-400); margin:0;">
+            Directly edit product stocks below using [−] / [+] or typing exact units
+          </p>
+        </div>
         <div class="admin-table-search">
-          <input type="text" class="search-input" placeholder="Search products..." 
+          <input type="text" class="search-input" placeholder="Search products by name or category..." 
                  id="adminProductSearch" oninput="window.adminSearchProducts(this.value)" />
         </div>
       </div>
@@ -40,105 +77,135 @@ export function renderAdminProducts() {
               <th>Product</th>
               <th>Category</th>
               <th>Price</th>
-              <th>Stock</th>
+              <th style="min-width:180px;">Stock Units (Editable)</th>
               <th>Rating</th>
-              <th>Status</th>
+              <th>Inventory Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            ${productsList.map(p => `
-              <tr data-product-id="${p.id}">
-                <td>
-                  <div class="table-product">
-                    <div class="table-product-img" style="background: linear-gradient(135deg, #2D5E3F, #1B3A2D); display:flex; align-items:center; justify-content:center; color:var(--gold-400); overflow:hidden; border-radius:var(--radius-md);">
-                      ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;" />` : ICONS.bowl}
-                    </div>
-                    <div>
-                      <div class="table-product-name" style="display:flex; align-items:center; gap:6px;">
-                        <span>${p.name}</span>
-                        ${p.id === currentSpecialId ? `<span class="badge" style="background:rgba(212,160,23,0.25); color:var(--gold-400); border:1px solid rgba(212,160,23,0.5); font-size:10px; font-weight:700;">🌟 DAILY SPL</span>` : ''}
+            ${productsList.map(p => {
+              const stock = parseInt(p.stock) || 0;
+              const statusClass = stock > 25 ? 'status-instock' : (stock > 10 ? 'status-lowstock' : 'status-outstock');
+              const statusLabel = stock > 25 ? 'In Stock' : (stock > 0 ? 'Low Stock' : 'Out of Stock');
+              return `
+                <tr data-product-id="${p.id}">
+                  <td>
+                    <div class="table-product">
+                      <div class="table-product-img" style="background: linear-gradient(135deg, #2D5E3F, #1B3A2D); display:flex; align-items:center; justify-content:center; color:var(--gold-400); overflow:hidden; border-radius:var(--radius-md);">
+                        ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;" />` : ICONS.bowl}
                       </div>
-                      <div class="table-product-tamil">${p.tamilName}</div>
+                      <div>
+                        <div class="table-product-name" style="display:flex; align-items:center; gap:6px;">
+                          <span>${p.name}</span>
+                          ${p.id === currentSpecialId ? `<span class="badge" style="background:rgba(212,160,23,0.25); color:var(--gold-400); border:1px solid rgba(212,160,23,0.5); font-size:10px; font-weight:700;">🌟 DAILY SPL</span>` : ''}
+                        </div>
+                        <div class="table-product-tamil" style="color:var(--gold-400);">${p.tamilName}</div>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td><span class="badge" style="background:var(--cream-100); color:var(--neutral-700);">${p.category}</span></td>
-                <td><strong>${formatPrice(p.price)}</strong> <span style="color:var(--neutral-400); text-decoration:line-through; font-size:var(--text-xs);">${formatPrice(p.originalPrice)}</span></td>
-                <td>${p.stock}</td>
-                <td><span style="color:var(--gold-500);">${ICONS.star}</span> ${p.rating}</td>
-                <td>
-                  <span class="status-badge ${p.stock > 25 ? 'status-instock' : p.stock > 10 ? 'status-lowstock' : 'status-outstock'}">
-                    ${p.stock > 25 ? 'In Stock' : p.stock > 10 ? 'Low Stock' : 'Critical'}
-                  </span>
-                </td>
-                <td>
-                  <div class="table-actions">
-                    <button class="table-action-btn ${p.id === currentSpecialId ? 'active' : ''}" style="${p.id === currentSpecialId ? 'background:rgba(212,160,23,0.25); color:var(--gold-400);' : ''}" onclick="window.setAsDailySpecial(${p.id})" title="${p.id === currentSpecialId ? 'Active Daily Special' : 'Set as Daily Special'}">${ICONS.sparkle}</button>
-                    <button class="table-action-btn" onclick="window.editProduct(${p.id})" title="Edit">${ICONS.edit}</button>
-                    <button class="table-action-btn delete" onclick="window.deleteProduct(${p.id})" title="Delete">${ICONS.trash}</button>
-                  </div>
-                </td>
-              </tr>
-            `).join('')}
+                  </td>
+                  <td><span class="badge" style="background:rgba(255,255,255,0.06); color:var(--cream-200); border:1px solid rgba(255,255,255,0.1);">${p.category}</span></td>
+                  <td>
+                    <strong style="color:var(--gold-400);">${formatPrice(p.price)}</strong> 
+                    ${p.originalPrice && p.originalPrice > p.price ? `<span style="color:var(--cream-500); text-decoration:line-through; font-size:var(--text-xs);">${formatPrice(p.originalPrice)}</span>` : ''}
+                  </td>
+                  
+                  <!-- Interactive Stock Editor Cell -->
+                  <td>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <button type="button" class="admin-stock-step-btn" onclick="window.adjustProductStock(${p.id}, -1)" title="Decrease Stock by 1">−</button>
+                      <input type="number" 
+                             class="admin-stock-num-input" 
+                             id="stockInput_${p.id}" 
+                             value="${stock}" 
+                             min="0" 
+                             onchange="window.saveDirectStock(${p.id}, this.value)" 
+                             onkeydown="if(event.key==='Enter') window.saveDirectStock(${p.id}, this.value)"
+                             title="Type stock and press Enter or click away to save" />
+                      <button type="button" class="admin-stock-step-btn" onclick="window.adjustProductStock(${p.id}, 1)" title="Increase Stock by 1">+</button>
+                      <button type="button" class="admin-stock-boost-btn" onclick="window.adjustProductStock(${p.id}, 10)" title="Quick Add +10 units">+10</button>
+                    </div>
+                  </td>
+
+                  <td><span style="color:var(--gold-500);">${ICONS.star}</span> ${p.rating || '5.0'}</td>
+                  
+                  <td>
+                    <span class="status-badge ${statusClass}" id="stockStatusBadge_${p.id}">
+                      ${statusLabel}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="table-action-btn ${p.id === currentSpecialId ? 'active' : ''}" style="${p.id === currentSpecialId ? 'background:rgba(212,160,23,0.25); color:var(--gold-400);' : ''}" onclick="window.setAsDailySpecial(${p.id})" title="${p.id === currentSpecialId ? 'Active Daily Special' : 'Set as Daily Special'}">${ICONS.sparkle}</button>
+                      <button class="table-action-btn" onclick="window.editProduct(${p.id})" title="Edit Product Details">${ICONS.edit}</button>
+                      <button class="table-action-btn delete" onclick="window.deleteProduct(${p.id})" title="Delete Product">${ICONS.trash}</button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Product Modal -->
+    <!-- Product Add/Edit Modal -->
     <div class="modal-overlay" id="productModal">
-      <div class="modal" style="max-width:600px;">
-        <div class="modal-header">
-          <h3 id="productModalTitle">Add New Product</h3>
-          <button class="modal-close" onclick="window.closeProductModal()">${ICONS.x}</button>
+      <div class="modal admin-modal-card" style="display:block !important; position:relative !important; max-width:620px; background:#0c1a14; color:#FFF8E7; border:1.5px solid rgba(212,160,23,0.35); border-radius:var(--radius-2xl); box-shadow:0 25px 70px rgba(0,0,0,0.8);">
+        <div class="modal-header" style="border-bottom:1px solid rgba(212,160,23,0.2); padding-bottom:var(--space-3); margin-bottom:var(--space-5);">
+          <div>
+            <span style="font-size:11px; color:var(--gold-400); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Product Catalog</span>
+            <h3 id="productModalTitle" style="color:#FFF8E7; margin:2px 0 0; font-size:var(--text-xl);">Add New Product</h3>
+          </div>
+          <button class="modal-close" onclick="window.closeProductModal()" style="font-size:22px; color:var(--cream-200); background:rgba(255,255,255,0.08); border:1px solid rgba(212,160,23,0.3); border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer;">${ICONS.x}</button>
         </div>
+        
         <input type="hidden" id="editProductId" value="" />
         
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4);">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); margin-bottom:var(--space-4);">
           <div class="form-group">
-            <label class="form-label">Product Name *</label>
-            <input type="text" class="form-input" id="prodName" placeholder="e.g., Ragi Kanji" />
+            <label class="form-label" style="color:var(--cream-200); font-size:var(--text-xs); font-weight:600;">Product Name *</label>
+            <input type="text" class="form-input" id="prodName" placeholder="e.g., Karupu Kauvni Kanji" style="background:#13261c; border-color:rgba(212,160,23,0.3); color:#FFF8E7;" />
           </div>
           <div class="form-group">
-            <label class="form-label">Tamil Name *</label>
-            <input type="text" class="form-input" id="prodTamilName" placeholder="e.g., ராகி கஞ்சி" />
+            <label class="form-label" style="color:var(--cream-200); font-size:var(--text-xs); font-weight:600;">Tamil Name *</label>
+            <input type="text" class="form-input" id="prodTamilName" placeholder="e.g., கருப்பு கவுனி கஞ்சி" style="background:#13261c; border-color:rgba(212,160,23,0.3); color:#FFF8E7;" />
           </div>
         </div>
         
-        <div class="form-group">
-          <label class="form-label">Category *</label>
-          <select class="form-select" id="prodCategory">
-            <option value="kanji">Kanji Varieties</option>
-            <option value="daily-spl">Daily Special</option>
-            <option value="solid-eats">Healthy Snacks</option>
-            <option value="traditional-sweets">Traditional Sweets</option>
+        <div class="form-group" style="margin-bottom:var(--space-4);">
+          <label class="form-label" style="color:var(--cream-200); font-size:var(--text-xs); font-weight:600;">Category *</label>
+          <select class="form-select" id="prodCategory" style="background:#13261c; border-color:rgba(212,160,23,0.3); color:#FFF8E7;">
+            <option value="Kanji">Kanji Varieties</option>
+            <option value="Daily Special">Daily Special</option>
+            <option value="Healthy Snacks">Healthy Snacks</option>
+            <option value="Traditional Sweets">Traditional Sweets</option>
           </select>
         </div>
         
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--space-4);">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--space-4); margin-bottom:var(--space-4);">
           <div class="form-group">
-            <label class="form-label">Price (₹) *</label>
-            <input type="number" class="form-input" id="prodPrice" placeholder="99" />
+            <label class="form-label" style="color:var(--cream-200); font-size:var(--text-xs); font-weight:600;">Price (₹) *</label>
+            <input type="number" class="form-input" id="prodPrice" placeholder="99" style="background:#13261c; border-color:rgba(212,160,23,0.3); color:#FFF8E7;" />
           </div>
           <div class="form-group">
-            <label class="form-label">Original Price (₹)</label>
-            <input type="number" class="form-input" id="prodOrigPrice" placeholder="149" />
+            <label class="form-label" style="color:var(--cream-200); font-size:var(--text-xs); font-weight:600;">Original MRP (₹)</label>
+            <input type="number" class="form-input" id="prodOrigPrice" placeholder="149" style="background:#13261c; border-color:rgba(212,160,23,0.3); color:#FFF8E7;" />
           </div>
           <div class="form-group">
-            <label class="form-label">Stock *</label>
-            <input type="number" class="form-input" id="prodStock" placeholder="50" />
+            <label class="form-label" style="color:var(--gold-400); font-size:var(--text-xs); font-weight:700;">Stock Units *</label>
+            <input type="number" class="form-input" id="prodStock" placeholder="50" min="0" style="background:#1a3326; border-color:rgba(212,160,23,0.6); color:#FFF8E7; font-weight:700;" />
           </div>
         </div>
         
-        <div class="form-group">
-          <label class="form-label">Description</label>
-          <textarea class="form-textarea" id="prodDesc" placeholder="Product description..." rows="3"></textarea>
+        <div class="form-group" style="margin-bottom:var(--space-5);">
+          <label class="form-label" style="color:var(--cream-200); font-size:var(--text-xs); font-weight:600;">Description</label>
+          <textarea class="form-textarea" id="prodDesc" placeholder="Product culinary and health benefits description..." rows="3" style="background:#13261c; border-color:rgba(212,160,23,0.3); color:#FFF8E7;"></textarea>
         </div>
         
-        <div style="display:flex; gap:var(--space-4); margin-top:var(--space-4);">
-          <button class="btn btn-primary" style="flex:1;" onclick="window.saveProduct()">Save Product</button>
-          <button class="btn btn-outline" onclick="window.closeProductModal()">Cancel</button>
+        <div style="display:flex; gap:var(--space-4); margin-top:var(--space-6);">
+          <button class="btn btn-primary btn-ripple" style="flex:1;" onclick="window.saveProduct()">Save Product & Stock</button>
+          <button class="btn btn-outline btn-ripple" onclick="window.closeProductModal()" style="color:var(--cream-200); border-color:rgba(255,255,255,0.2);">Cancel</button>
         </div>
       </div>
     </div>
@@ -151,24 +218,34 @@ export function initAdminProductHandlers() {
     const title = document.getElementById('productModalTitle');
     if (!modal) return;
 
+    if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+
     if (product) {
-      title.textContent = 'Edit Product';
+      if (title) title.textContent = 'Edit Product & Stock';
       document.getElementById('editProductId').value = product.id;
-      document.getElementById('prodName').value = product.name;
-      document.getElementById('prodTamilName').value = product.tamilName;
-      document.getElementById('prodCategory').value = product.category;
-      document.getElementById('prodPrice').value = product.price;
-      document.getElementById('prodOrigPrice').value = product.originalPrice;
-      document.getElementById('prodStock').value = product.stock;
-      document.getElementById('prodDesc').value = product.description;
+      document.getElementById('prodName').value = product.name || '';
+      document.getElementById('prodTamilName').value = product.tamilName || '';
+      document.getElementById('prodCategory').value = product.category || 'Kanji';
+      document.getElementById('prodPrice').value = product.price || '';
+      document.getElementById('prodOrigPrice').value = product.originalPrice || '';
+      document.getElementById('prodStock').value = product.stock !== undefined ? product.stock : 50;
+      document.getElementById('prodDesc').value = product.description || '';
     } else {
-      title.textContent = 'Add New Product';
+      if (title) title.textContent = 'Add New Product';
       document.getElementById('editProductId').value = '';
-      ['prodName', 'prodTamilName', 'prodPrice', 'prodOrigPrice', 'prodStock', 'prodDesc'].forEach(id => {
+      ['prodName', 'prodTamilName', 'prodPrice', 'prodOrigPrice', 'prodDesc'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
+      const stockEl = document.getElementById('prodStock');
+      if (stockEl) stockEl.value = '50';
     }
+
+    modal.onclick = function(e) {
+      if (e.target === modal) window.closeProductModal();
+    };
 
     modal.classList.add('active');
   };
@@ -178,62 +255,81 @@ export function initAdminProductHandlers() {
   };
 
   window.editProduct = function(id) {
-    const product = productsList.find(p => p.id === id);
+    const product = ProductsStore.getById(id);
     if (product) window.openProductModal(product);
   };
 
+  window.adjustProductStock = function(id, delta) {
+    const updated = ProductsStore.adjustStock(id, delta);
+    if (!updated) return;
+
+    // Update input and status badge in real time
+    const input = document.getElementById(`stockInput_${id}`);
+    if (input) input.value = updated.stock;
+
+    const badge = document.getElementById(`stockStatusBadge_${id}`);
+    if (badge) {
+      badge.className = `status-badge ${updated.stock > 25 ? 'status-instock' : (updated.stock > 10 ? 'status-lowstock' : 'status-outstock')}`;
+      badge.textContent = updated.stock > 25 ? 'In Stock' : (updated.stock > 0 ? 'Low Stock' : 'Out of Stock');
+    }
+
+    showToast('Stock Updated', `${updated.name}: ${updated.stock} units`, 'info');
+  };
+
+  window.saveDirectStock = function(id, value) {
+    const parsed = Math.max(0, parseInt(value) || 0);
+    const updated = ProductsStore.updateStock(id, parsed);
+    if (!updated) return;
+
+    const input = document.getElementById(`stockInput_${id}`);
+    if (input) input.value = updated.stock;
+
+    const badge = document.getElementById(`stockStatusBadge_${id}`);
+    if (badge) {
+      badge.className = `status-badge ${updated.stock > 25 ? 'status-instock' : (updated.stock > 10 ? 'status-lowstock' : 'status-outstock')}`;
+      badge.textContent = updated.stock > 25 ? 'In Stock' : (updated.stock > 0 ? 'Low Stock' : 'Out of Stock');
+    }
+
+    showToast('Stock Saved', `${updated.name}: ${updated.stock} units available`, 'success');
+  };
+
   window.deleteProduct = function(id) {
-    if (!confirm('Are you sure you want to delete this product?')) return;
-    productsList = productsList.filter(p => p.id !== id);
-    // Re-render
+    const p = ProductsStore.getById(id);
+    const name = p ? p.name : 'Product';
+    if (!confirm(`Are you sure you want to delete "${name}" from the product catalog?`)) return;
+    ProductsStore.deleteProduct(id);
     if (window.adminNavigate) window.adminNavigate('products');
-    showToast('Deleted', 'Product removed successfully', 'warning');
+    showToast('Deleted', `"${name}" removed successfully`, 'warning');
   };
 
   window.saveProduct = function() {
     const editId = document.getElementById('editProductId')?.value;
     const name = document.getElementById('prodName')?.value.trim();
     const tamilName = document.getElementById('prodTamilName')?.value.trim();
-    const category = document.getElementById('prodCategory')?.value;
+    const category = document.getElementById('prodCategory')?.value || 'Kanji';
     const price = parseInt(document.getElementById('prodPrice')?.value);
     const originalPrice = parseInt(document.getElementById('prodOrigPrice')?.value) || price;
     const stock = parseInt(document.getElementById('prodStock')?.value);
     const description = document.getElementById('prodDesc')?.value.trim();
 
-    if (!name || !tamilName || !price || !stock) {
-      showToast('Missing Fields', 'Please fill in all required fields', 'error');
+    if (!name || !tamilName || isNaN(price) || isNaN(stock)) {
+      showToast('Missing Fields', 'Please fill in Name, Tamil Name, Price, and Stock units', 'error');
       return;
     }
 
-    if (editId) {
-      // Update existing
-      const product = productsList.find(p => p.id === parseInt(editId));
-      if (product) {
-        Object.assign(product, { name, tamilName, category, price, originalPrice, stock, description });
-      }
-      showToast('Updated Successfully', `${name} updated successfully`, 'success');
-    } else {
-      // Add
-      const newProduct = {
-        id: Date.now(),
-        name,
-        tamilName,
-        category,
-        price,
-        originalPrice,
-        description,
-        nutrition: { calories: '160', protein: '5g', fiber: '4g', iron: '15%', calcium: '10%', vitB: '15%' },
-        rating: 5.0,
-        reviews: 1,
-        badge: 'new',
-        inStock: true,
-        stock,
-        image: ''
-      };
-      productsList.unshift(newProduct);
-      showToast('Added Successfully', `${name} added to catalog`, 'success');
-    }
+    const payload = {
+      id: editId ? parseInt(editId) : undefined,
+      name,
+      tamilName,
+      category,
+      price,
+      originalPrice,
+      stock,
+      description
+    };
 
+    const saved = ProductsStore.saveProduct(payload);
+    showToast('Product Saved', `${saved.name} (Stock: ${saved.stock}) saved successfully`, 'success');
     window.closeProductModal();
     if (window.adminNavigate) window.adminNavigate('products');
   };
@@ -249,7 +345,7 @@ export function initAdminProductHandlers() {
 
   window.setAsDailySpecial = function(id) {
     DailySpecialStore.setId(id);
-    const p = productsList.find(item => item.id === id);
+    const p = ProductsStore.getById(id);
     showToast('🌟 Daily Special Set!', `${p ? p.name : 'Product'} is now active as today's Daily Special!`, 'success');
     if (window.adminNavigate) window.adminNavigate('products');
   };

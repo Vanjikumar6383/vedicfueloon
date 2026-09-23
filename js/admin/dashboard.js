@@ -33,50 +33,83 @@ export function renderAdminDashboard() {
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
   const processingOrders = orders.filter(o => o.status === 'processing').length;
 
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
   return `
     <div class="admin-header">
       <div>
-        <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(39, 174, 96, 0.15); border:1px solid rgba(39, 174, 96, 0.35); padding:4px 12px; border-radius:9999px; font-size:var(--text-xs); color:#2ecc71; margin-bottom:8px;">
-          <span style="width:7px; height:7px; border-radius:50%; background:#2ecc71; box-shadow:0 0 8px #2ecc71; animation:pulse 2s infinite;"></span>
-          LIVE STORE SYSTEM ONLINE
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap;">
+          <div class="admin-badge-live">
+            <span class="admin-live-pulse"></span>
+            KITCHEN & DISPATCH ENGINE ONLINE
+          </div>
+          <span style="font-size:11px; color:var(--cream-400); background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.1);">
+            🕒 ${dateStr} · ${timeStr}
+          </span>
         </div>
-        <h1>Executive Dashboard</h1>
-        <p style="color:var(--cream-300); font-size:var(--text-sm);">Tamil Heritage Health Foods · Store Control Panel</p>
+        <h1>Command Center</h1>
+        <p style="color:var(--cream-300); font-size:var(--text-sm);">
+          VedicFueloon · Traditional Tamil Health Food Control Desk
+        </p>
       </div>
-      <div class="admin-user">
-        <div style="text-align:right;">
-          <div style="font-weight:700; color:var(--cream-50);">Master Admin</div>
-          <div style="font-size:var(--text-xs); color:var(--gold-400);">VedicFueloon Headquarters</div>
+
+      <div class="admin-header-actions">
+        <button class="admin-action-btn-pill" onclick="window.adminNavigate('ebilling')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          E-Billing Hub
+        </button>
+        <button class="admin-action-btn-pill" onclick="window.adminNavigate('orders')">
+          ${ICONS.package} Live Orders
+        </button>
+        <button class="admin-action-btn-pill" onclick="window.clearAllStoreData()" title="Reset tables to 0 rows for fresh future data" style="color:#e74c3c; border-color:rgba(231,76,60,0.4);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          Empty Tables
+        </button>
+        <div class="admin-user" style="margin-left:8px;">
+          <div style="text-align:right;">
+            <div style="font-weight:700; color:var(--cream-50);">Master Admin</div>
+            <div style="font-size:var(--text-xs); color:var(--gold-400);">VedicFueloon HQ</div>
+          </div>
+          <div class="admin-avatar">VF</div>
         </div>
-        <div class="admin-avatar">VF</div>
       </div>
     </div>
 
-    <!-- Stats Cards -->
+    <!-- Enhanced Executive Stats Grid -->
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-icon">${ICONS.currency}</div>
+        <div class="stat-icon" style="background:rgba(212,160,23,0.15); color:var(--gold-400);">${ICONS.currency}</div>
         <div class="stat-value">${formatPrice(totalRevenue)}</div>
-        <div class="stat-label">Total Revenue</div>
-        <span class="stat-change positive">↑ 12.5%</span>
+        <div class="stat-label">Gross Store Revenue</div>
+        <span class="stat-change positive">↑ 14.8% this week</span>
       </div>
+
       <div class="stat-card">
-        <div class="stat-icon">${ICONS.package}</div>
+        <div class="stat-icon" style="background:rgba(39,174,96,0.15); color:#2ecc71;">${ICONS.package}</div>
         <div class="stat-value">${orders.length}</div>
-        <div class="stat-label">Total Orders</div>
-        <span class="stat-change positive">↑ 8.3%</span>
+        <div class="stat-label">Total Transactions</div>
+        <div class="admin-kpi-subtext">
+          <span style="color:#2ecc71;">${orders.filter(o => o.status === 'delivered').length} Delivered</span> · 
+          <span style="color:var(--gold-400);">${pendingOrders} Pending</span>
+        </div>
       </div>
+
       <div class="stat-card">
-        <div class="stat-icon">${ICONS.users}</div>
+        <div class="stat-icon" style="background:rgba(52,152,219,0.15); color:#3498db;">📄</div>
+        <div class="stat-value">${orders.length}</div>
+        <div class="stat-label">Official E-Bills Issued</div>
+        <span class="stat-change positive" style="background:rgba(39,174,96,0.15); color:#2ecc71;">100% Tax Compliant</span>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(155,89,182,0.15); color:#9b59b6;">${ICONS.users}</div>
         <div class="stat-value">${customers.length}</div>
-        <div class="stat-label">Customers</div>
-        <span class="stat-change positive">↑ 5.1%</span>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">${ICONS.bowl}</div>
-        <div class="stat-value">${PRODUCTS.length}</div>
-        <div class="stat-label">Products</div>
-        <span class="stat-change positive">Active</span>
+        <div class="stat-label">Patron Directory</div>
+        <div class="admin-kpi-subtext">
+          Tamil Nadu Network
+        </div>
       </div>
     </div>
 
@@ -160,43 +193,37 @@ export function renderAdminDashboard() {
       <!-- Revenue Chart -->
       <div class="chart-container">
         <div class="chart-header">
-          <h3>${ICONS.barChart} Revenue Overview</h3>
-          <span style="font-size:var(--text-sm); color:var(--neutral-500);">Last 7 days</span>
+          <div>
+            <h3 style="margin:0;">${ICONS.barChart} Revenue Trend</h3>
+            <span style="font-size:var(--text-xs); color:var(--gold-400);">Daily E-Commerce Volume (Last 7 Days)</span>
+          </div>
+          <button class="btn btn-sm btn-ghost" onclick="window.adminNavigate('ebilling')">View Invoices →</button>
         </div>
         <div class="bar-chart">
           ${last7Days.map(d => `
             <div class="bar">
-              <div class="bar-value">${d.revenue > 0 ? formatPrice(d.revenue) : '-'}</div>
-              <div class="bar-fill" style="height: ${Math.max(4, (d.revenue / maxRevenue) * 160)}px;"></div>
+              <div class="bar-value">${d.revenue > 0 ? '₹' + d.revenue : '-'}</div>
+              <div class="bar-fill admin-chart-bar" style="height: ${Math.max(6, (d.revenue / maxRevenue) * 160)}px;"></div>
               <div class="bar-label">${d.day}</div>
             </div>
           `).join('')}
         </div>
       </div>
 
-      <!-- Quick Stats -->
+      <!-- Quick Stats & Alerts -->
       <div>
         <!-- Pending Orders Alert -->
         ${pendingOrders > 0 ? `
-        <div style="background: var(--warning-light); border: 1px solid var(--warning); border-radius: var(--radius-xl); padding: var(--space-5); margin-bottom: var(--space-6);">
-          <div style="display:flex; align-items:center; gap:var(--space-3);">
-            <span style="font-size:var(--text-2xl); color:var(--warning);">${ICONS.alert}</span>
-            <div>
-              <div style="font-weight:700; color:var(--neutral-900);">${pendingOrders} Pending Order${pendingOrders > 1 ? 's' : ''}</div>
-              <div style="font-size:var(--text-sm); color:var(--neutral-600);">Needs your attention</div>
+        <div style="background: rgba(230, 126, 34, 0.15); border: 1px solid rgba(230, 126, 34, 0.4); border-radius: var(--radius-xl); padding: var(--space-4) var(--space-5); margin-bottom: var(--space-4);">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:var(--space-3);">
+              <span style="font-size:var(--text-xl); color:#e67e22;">${ICONS.hourglass}</span>
+              <div>
+                <div style="font-weight:700; color:#FFF8E7; font-size:var(--text-sm);">${pendingOrders} Orders Awaiting Preparation</div>
+                <div style="font-size:var(--text-xs); color:var(--cream-300);">Clay pots heating up for sunrise delivery</div>
+              </div>
             </div>
-          </div>
-        </div>
-        ` : ''}
-        
-        ${processingOrders > 0 ? `
-        <div style="background: var(--info-light); border: 1px solid var(--info); border-radius: var(--radius-xl); padding: var(--space-5); margin-bottom: var(--space-6);">
-          <div style="display:flex; align-items:center; gap:var(--space-3);">
-            <span style="font-size:var(--text-2xl); color:var(--primary-600);">${ICONS.package}</span>
-            <div>
-              <div style="font-weight:700; color:var(--neutral-900);">${processingOrders} Processing</div>
-              <div style="font-size:var(--text-sm); color:var(--neutral-600);">Being prepared</div>
-            </div>
+            <button class="btn btn-sm btn-outline" onclick="window.adminNavigate('orders')">Fulfill</button>
           </div>
         </div>
         ` : ''}
@@ -204,56 +231,85 @@ export function renderAdminDashboard() {
         <!-- Low Stock Alert -->
         <div class="chart-container">
           <div class="chart-header">
-            <h3>${ICONS.lightning} Low Stock Items</h3>
+            <h3>${ICONS.lightning} Low Stock Alert</h3>
+            <span style="font-size:var(--text-xs); color:var(--cream-400);">Clay Pot Ready</span>
           </div>
-          ${PRODUCTS.filter(p => p.stock < 25).slice(0, 5).map(p => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:var(--space-3) 0; border-bottom:1px solid var(--cream-100);">
+          ${PRODUCTS.filter(p => p.stock < 25).slice(0, 4).map(p => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:var(--space-2) 0; border-bottom:1px solid rgba(255,255,255,0.06);">
               <div>
-                <div style="font-weight:600; font-size:var(--text-sm);">${p.name}</div>
-                <div class="tamil-text" style="font-size:var(--text-xs); color:var(--orange-500);">${p.tamilName}</div>
+                <div style="font-weight:600; font-size:var(--text-xs); color:#FFF8E7;">${p.name}</div>
+                <div class="tamil-text" style="font-size:11px; color:var(--gold-400);">${p.tamilName}</div>
               </div>
-              <span class="status-badge ${p.stock < 15 ? 'status-outstock' : 'status-lowstock'}">${p.stock} left</span>
+              <span class="status-badge ${p.stock < 15 ? 'status-outstock' : 'status-lowstock'}" style="font-size:10px;">${p.stock} left</span>
             </div>
           `).join('')}
         </div>
       </div>
     </div>
 
-    <!-- Recent Orders Table -->
+    <!-- Recent Orders & E-Billing Stream -->
     <div class="admin-table-container" style="margin-top: var(--space-8);">
-      <div class="admin-table-header">
-        <h3>${ICONS.clipboard} Recent Orders</h3>
-        <button class="btn btn-sm btn-outline" onclick="window.adminNavigate('orders')">View All →</button>
+      <div class="admin-table-header" style="flex-wrap:wrap; gap:var(--space-3);">
+        <div>
+          <h3 style="margin:0;">${ICONS.clipboard} Recent Orders & Instant E-Bills</h3>
+          <p style="margin:0; font-size:var(--text-xs); color:var(--cream-400);">Download or preview official tax invoices matching bill.pdf format</p>
+        </div>
+        <div style="display:flex; gap:var(--space-2);">
+          <button class="admin-action-btn-pill" onclick="window.adminNavigate('ebilling')">E-Billing Center →</button>
+          <button class="btn btn-sm btn-outline" onclick="window.adminNavigate('orders')">All Orders →</button>
+        </div>
       </div>
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Customer</th>
-            <th>Items</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${recentOrders.length > 0 ? recentOrders.map(order => `
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead>
             <tr>
-              <td><strong>${order.id}</strong></td>
-              <td>${order.customer.name}</td>
-              <td>${order.items.length} item${order.items.length > 1 ? 's' : ''}</td>
-              <td><strong>${formatPrice(order.total)}</strong></td>
-              <td><span class="status-badge status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span></td>
-              <td style="font-size:var(--text-xs); color:var(--neutral-500);">${formatDate(order.createdAt)}</td>
+              <th>Order & Invoice</th>
+              <th>Customer</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>E-Bill Action</th>
             </tr>
-          `).join('') : `
-            <tr><td colspan="6" style="text-align:center; padding:var(--space-8); color:var(--neutral-400);">No orders yet</td></tr>
-          `}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            ${recentOrders.length > 0 ? recentOrders.map(order => {
+              const invNo = order.invoiceNo || `VF/260921/${order.id.slice(-5)}`;
+              return `
+                <tr>
+                  <td>
+                    <span class="admin-order-id-badge">${order.id}</span>
+                    <span class="admin-invoice-badge">${invNo}</span>
+                  </td>
+                  <td>
+                    <div style="font-weight:700; color:#FFF8E7;">${order.customer.name}</div>
+                    <div style="font-size:11px; color:var(--cream-400);">${order.customer.phone}</div>
+                  </td>
+                  <td style="font-size:var(--text-xs); color:var(--cream-200);">${order.items.length} item${order.items.length > 1 ? 's' : ''}</td>
+                  <td><strong style="color:var(--gold-400); font-size:var(--text-sm);">${formatPrice(order.total)}</strong></td>
+                  <td><span class="status-badge status-${order.status}">${order.status.toUpperCase()}</span></td>
+                  <td>
+                    <div class="table-actions" style="gap:6px;">
+                      <button class="admin-btn-ebill" onclick="window.downloadEBill('${order.id}')" title="Download E-Bill (PDF)">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        PDF
+                      </button>
+                      <button class="table-action-btn" onclick="window.previewEBill('${order.id}')" title="Preview E-Bill">
+                        ${ICONS.eye}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('') : `
+              <tr><td colspan="6" style="text-align:center; padding:var(--space-8); color:var(--cream-400);">No orders yet</td></tr>
+            `}
+          </tbody>
+        </table>
+      </div>
     </div>
   `;
 }
+
 
 // ── Daily Special Admin Actions ──
 window.previewDailySpecial = function(productId) {

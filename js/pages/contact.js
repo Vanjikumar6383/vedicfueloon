@@ -48,7 +48,7 @@ export function renderContactPage() {
             <div class="comm-mini-badge wa-mini">
               <span class="badge-brand-icon">${ICONS.realWhatsapp}</span>
               <div>
-                <strong>WhatsApp Order</strong>
+                <strong>WhatsApp Support</strong>
                 <small>Instant Response</small>
               </div>
             </div>
@@ -78,9 +78,9 @@ export function renderContactPage() {
             </div>
 
             <div class="comm-card-body">
-              <div class="comm-card-kicker">OFFICIAL ORDER & SUPPORT DESK</div>
-              <h2 class="comm-channel-title">WhatsApp Chat & Quick Order</h2>
-              <div class="comm-tamil-sub tamil-text">வாட்ஸ்அப் நேரடி உரையாடல் & உடனடி ஆர்டர்</div>
+              <div class="comm-card-kicker">OFFICIAL SUPPORT & INQUIRIES DESK</div>
+              <h2 class="comm-channel-title">WhatsApp Support & Care</h2>
+              <div class="comm-tamil-sub tamil-text">வாட்ஸ்அப் நேரடி உதவி & வழிகாட்டல்</div>
               
               <div class="comm-handle-box wa-handle-box">
                 <span class="handle-icon">${ICONS.phone}</span>
@@ -91,14 +91,14 @@ export function renderContactPage() {
               </div>
 
               <p class="comm-channel-desc">
-                Chat directly with our master brew team. Place instant orders for traditional Kanji varieties, 
-                Sprouts Pulses, and Boiled Eggs, and receive real-time sunrise delivery tracking.
+                Chat directly with our care team for dietary questions, Siddha preparation details, 
+                delivery timings, or custom wellness guidance.
               </p>
 
               <div class="comm-perks-list">
                 <div class="comm-perk-item">
                   <span class="perk-check">${ICONS.check}</span>
-                  <span>Instant order placement & live earthenware batch status</span>
+                  <span>Direct consultation on traditional recipe ingredients & benefits</span>
                 </div>
                 <div class="comm-perk-item">
                   <span class="perk-check">${ICONS.check}</span>
@@ -106,29 +106,29 @@ export function renderContactPage() {
                 </div>
                 <div class="comm-perk-item">
                   <span class="perk-check">${ICONS.check}</span>
-                  <span>Sunrise morning delivery scheduling (6:00 AM - 9:30 AM)</span>
+                  <span>Sunrise morning delivery coordination (6:00 AM - 9:30 AM)</span>
                 </div>
               </div>
 
               <!-- Primary Action Button -->
-              <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20order%20from%20VedicFueloon" 
+              <a href="https://wa.me/919876543210?text=Hi!%20I%20have%20an%20inquiry%20regarding%20VedicFueloon" 
                  target="_blank" rel="noopener" class="comm-primary-btn wa-primary-btn btn-ripple">
                 <span class="btn-brand-icon">${ICONS.realWhatsapp}</span>
-                <span>Chat on WhatsApp (+91 98765 43210)</span>
+                <span>Chat with Support on WhatsApp (+91 98765 43210)</span>
                 <span class="btn-arrow">${ICONS.arrowRight}</span>
               </a>
 
               <!-- Quick Message Prompt Chips -->
               <div class="comm-prompts-section">
-                <div class="prompts-label">Quick Order Prompts (Tap to open in WhatsApp):</div>
+                <div class="prompts-label">Quick Support Inquiries (Tap to chat):</div>
                 <div class="prompts-chips">
-                  <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20order%20today%27s%20fresh%20Kanji%20varieties." 
+                  <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20learn%20more%20about%20your%20traditional%20Kanji%20ingredients." 
                      target="_blank" rel="noopener" class="prompt-chip">
-                    ${ICONS.bowl} Order Today's Kanji
+                    ${ICONS.bowl} Kanji Ingredients & Nutrition
                   </a>
-                  <a href="https://wa.me/919876543210?text=Hi!%20I%20want%20to%20order%20Healthy%20Snacks%20(Sprouts%20Pulses%20and%20Boiled%20Egg)." 
+                  <a href="https://wa.me/919876543210?text=Hi!%20What%20are%20your%20sunrise%20delivery%20timings%20and%20service%20areas%3F" 
                      target="_blank" rel="noopener" class="prompt-chip">
-                    ${ICONS.salad} Order Healthy Snacks
+                    ${ICONS.truck} Delivery Area & Timings
                   </a>
                   <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20inquire%20about%20bulk%20catering%20for%20a%20family%20event." 
                      target="_blank" rel="noopener" class="prompt-chip">
@@ -220,11 +220,11 @@ export function renderContactPage() {
             <div class="composer-header-title">
               <span class="section-badge" style="background: rgba(37, 211, 102, 0.15); color: #128C7E; border: 1px solid rgba(37, 211, 102, 0.3);">
                 <span style="width:14px; height:14px; display:inline-block; vertical-align:middle;">${ICONS.realWhatsapp}</span>
-                INSTANT WHATSAPP MESSAGE LAUNCHER
+                INSTANT WHATSAPP SUPPORT LAUNCHER
               </span>
-              <h3>Compose Your Request Directly to WhatsApp</h3>
+              <h3>Compose Your Message to WhatsApp Support</h3>
               <p class="tamil-text" style="color: var(--gold-700); font-size: var(--text-sm); margin-top: var(--space-1);">
-                உங்கள் செய்தியை இங்கே உள்ளிட்டு நேரடியாக வாட்ஸ்அப்பில் அனுப்பவும்
+                உங்கள் கேள்விகள் அல்லது கருத்துக்களை நேரடியாக வாட்ஸ்அப்பில் அனுப்பவும்
               </p>
             </div>
             <div class="composer-badge-icon">
@@ -239,26 +239,25 @@ export function renderContactPage() {
             </div>
 
             <div class="form-group">
-              <label class="form-label">Select Communication Topic (தலைப்பு)</label>
+              <label class="form-label">Select Inquiry Topic (தலைப்பு)</label>
               <select class="form-input" id="waComposerTopic" style="cursor: pointer;">
-                <option value="Fresh Kanji Order">Place Fresh Kanji Order (கஞ்சி ஆர்டர்)</option>
-                <option value="Healthy Snacks Order">Order Healthy Snacks: Sprouts & Eggs (ஆரோக்கிய சிற்றுண்டிகள்)</option>
-                <option value="Traditional Sweets Order">Order Traditional Sweets: Ulundhan Kali (பாரம்பரிய இனிப்புகள்)</option>
                 <option value="Dietary Guidance">Dietary & Herbal Nutrition Guidance (ஊட்டச்சத்து விவரம்)</option>
-                <option value="Bulk Catering">Bulk Event / Family Gathering Catering (நிகழ்வு ஆர்டர்)</option>
+                <option value="Delivery Area Timings">Sunrise Delivery Timings & Coverage (டெலிவரி நேரம்)</option>
+                <option value="Bulk Catering Inquiry">Bulk Event / Gathering Catering Inquiry (நிகழ்வு விவரம்)</option>
+                <option value="Ingredients Information">Kanji Recipe & Ingredients Query (மூலப்பொருள் விவரம்)</option>
                 <option value="General Inquiry">General Question & Feedback (பொதுவான விவரம்)</option>
               </select>
             </div>
           </div>
 
           <div class="form-group" style="margin-top: var(--space-4);">
-            <label class="form-label">Your Message or Order Details (செய்தி விவரம்)</label>
-            <textarea class="form-textarea" id="waComposerMessage" rows="3" placeholder="Write the items you need, delivery address, or questions..."></textarea>
+            <label class="form-label">Your Message or Inquiry Details (செய்தி விவரம்)</label>
+            <textarea class="form-textarea" id="waComposerMessage" rows="3" placeholder="Write your questions, dietary preferences, or feedback..."></textarea>
           </div>
 
           <button class="btn btn-lg btn-ripple comm-send-btn" onclick="window.sendToWhatsAppComposer()">
             <span style="width:24px; height:24px; display:inline-block;">${ICONS.realWhatsapp}</span>
-            <span>Send Directly to WhatsApp (+91 98765 43210)</span>
+            <span>Send to WhatsApp Support (+91 98765 43210)</span>
             ${ICONS.arrowRight}
           </button>
         </div>
@@ -283,14 +282,14 @@ export function initContactHandlers() {
 
   window.sendToWhatsAppComposer = function() {
     const name = document.getElementById('waComposerName')?.value.trim() || 'Valued Patron';
-    const topic = document.getElementById('waComposerTopic')?.value || 'Fresh Kanji Order';
+    const topic = document.getElementById('waComposerTopic')?.value || 'General Inquiry';
     const message = document.getElementById('waComposerMessage')?.value.trim();
 
-    let fullText = `Vanakkam VedicFueloon!\n\n*Name:* ${name}\n*Topic:* ${topic}`;
+    let fullText = `Vanakkam VedicFueloon Support!\n\n*Name:* ${name}\n*Topic:* ${topic}`;
     if (message) {
       fullText += `\n*Message:* ${message}`;
     } else {
-      fullText += `\n*Message:* I would like to order fresh traditional health foods from VedicFueloon.`;
+      fullText += `\n*Message:* I have a question regarding VedicFueloon traditional health foods.`;
     }
 
     const encoded = encodeURIComponent(fullText);

@@ -497,27 +497,41 @@ export const PRODUCT_COLORS = [
   'linear-gradient(135deg, #2E8B57 0%, #1E6B42 100%)',
 ];
 
+export function getAllProducts() {
+  try {
+    const saved = localStorage.getItem('vf_products_custom');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    console.error('Error reading custom products from storage', e);
+  }
+  return PRODUCTS;
+}
+
 export function getProductColor(id) {
   return PRODUCT_COLORS[(id - 1) % PRODUCT_COLORS.length];
 }
 
 export function getProductById(id) {
-  return PRODUCTS.find(p => p.id === parseInt(id));
+  return getAllProducts().find(p => p.id === parseInt(id));
 }
 
 export function getProductsByCategory(categoryId) {
-  if (categoryId === 'all') return PRODUCTS;
+  const all = getAllProducts();
+  if (categoryId === 'all') return all;
   if (categoryId === 'daily-spl') {
     const spl = getDailySpecialProduct();
     return [{ ...spl, category: 'daily-spl', badge: 'daily' }];
   }
-  if (categoryId === 'kanji') return PRODUCTS.filter(p => p.category === 'kanji' || p.category === 'daily-spl');
-  return PRODUCTS.filter(p => p.category === categoryId);
+  if (categoryId === 'kanji') return all.filter(p => p.category === 'kanji' || p.category === 'daily-spl');
+  return all.filter(p => p.category === categoryId);
 }
 
 export function searchProducts(query) {
   const q = query.toLowerCase();
-  return PRODUCTS.filter(p =>
+  return getAllProducts().filter(p =>
     p.name.toLowerCase().includes(q) ||
     p.tamilName.includes(q) ||
     p.description.toLowerCase().includes(q)
@@ -525,10 +539,11 @@ export function searchProducts(query) {
 }
 
 export function getDailySpecialProduct() {
+  const all = getAllProducts();
   const currentId = localStorage.getItem('vf_daily_special_id');
   if (currentId) {
-    const found = PRODUCTS.find(p => p.id === parseInt(currentId));
+    const found = all.find(p => p.id === parseInt(currentId));
     if (found) return found;
   }
-  return PRODUCTS.find(p => p.id === 20) || PRODUCTS[0];
+  return all.find(p => p.id === 20) || all[0];
 }

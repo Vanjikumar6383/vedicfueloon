@@ -941,7 +941,12 @@
   visibility: visible;
 }
 
+.modal-overlay .modal,
 .modal {
+  display: block !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
   background: white;
   border-radius: var(--radius-xl);
   padding: var(--space-8);
@@ -954,6 +959,7 @@
 }
 
 .modal-overlay.active .modal {
+  display: block !important;
   transform: translateY(0) scale(1);
 }
 

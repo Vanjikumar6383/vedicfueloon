@@ -427,8 +427,7 @@
 }
 
 .page-enter {
-  animation: pageFadeBlurIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: opacity, filter, transform;
+  animation: pageFadeBlurIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* ── Success Checkmark ── */

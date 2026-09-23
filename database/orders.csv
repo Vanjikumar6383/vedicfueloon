@@ -1,0 +1,1 @@
+order_id,order_number,customer_id,product_id,product_sku,product_name,quantity,unit_price,subtotal,tax_amount,delivery_fee,discount_amount,net_payable,payment_method,payment_status,order_status,delivery_slot,delivery_address,city,tracking_number,ip_hash,created_at,updated_at,is_deleted

@@ -3,13 +3,19 @@
    Hero, Categories, Featured, Testimonials
    ============================================ */
 
-import { PRODUCTS, CATEGORIES, TESTIMONIALS, getProductColor, getDailySpecialProduct } from '../data.js';
+import { getAllProducts, CATEGORIES, TESTIMONIALS, getProductColor, getDailySpecialProduct } from '../data.js';
 import { renderProductCard, renderStars, ICONS } from '../components.js';
 
 export function renderHomePage() {
-  const featuredProducts = PRODUCTS.filter(p => p.badge === 'bestseller');
-  const newProducts = PRODUCTS.filter(p => p.badge === 'new');
+  const allProducts = getAllProducts();
   const dailySpecial = getDailySpecialProduct();
+
+  // Combine Daily Special as the leading featured slide, followed by bestsellers
+  const otherFeatured = allProducts.filter(p => p.badge === 'bestseller' && p.id !== dailySpecial.id);
+  const heroSlideProducts = [
+    { ...dailySpecial, isDailySpecial: true },
+    ...otherFeatured
+  ];
 
   return `
     <!-- Hero Section -->
@@ -38,17 +44,25 @@ export function renderHomePage() {
           <div class="hero-slider-wrapper parallax-float" id="heroProductSlider">
             <div class="hero-slider-card">
               <div class="hero-slides-container">
-                ${featuredProducts.map((p, idx) => `
-                  <div class="hero-slide ${idx === 0 ? 'active' : ''}" data-slide-index="${idx}">
+                ${heroSlideProducts.map((p, idx) => `
+                  <div class="hero-slide ${idx === 0 ? 'active' : ''} ${p.isDailySpecial ? 'hero-slide-special' : ''}" data-slide-index="${idx}">
                     <img src="${p.image}" alt="${p.name}" class="hero-slide-img" loading="${idx === 0 ? 'eager' : 'lazy'}" />
                     <div class="hero-slide-overlay"></div>
                     <div class="hero-slide-top-bar">
-                      <span class="hero-slide-badge">${ICONS.fire} TOP SELLER</span>
-                      <span class="hero-slide-rating">★ ${p.rating}</span>
+                      ${p.isDailySpecial ? `
+                        <span class="hero-slide-badge hero-badge-special">
+                          <span class="special-sparkle-dot"></span>
+                          ${ICONS.sparkle} DAILY SPECIAL · இன்றைய சிறப்பு
+                        </span>
+                      ` : `
+                        <span class="hero-slide-badge">${ICONS.fire} TOP SELLER</span>
+                      `}
+                      <span class="hero-slide-rating">★ ${p.rating || '4.9'}</span>
                     </div>
                     <div class="hero-slide-info">
                       <div class="hero-slide-title-row">
                         <div>
+                          ${p.isDailySpecial ? `<div class="hero-slide-special-kicker">${ICONS.sparkle} TODAY'S SPECIAL</div>` : ''}
                           <h3 class="hero-slide-title">${p.name}</h3>
                           <div class="hero-slide-tamil">${p.tamilName}</div>
                         </div>
@@ -58,12 +72,12 @@ export function renderHomePage() {
                         </div>
                       </div>
                       <div class="hero-slide-action-row">
-                        <a href="#/product/${p.id}" class="hero-slide-btn btn-ripple">
-                          ${ICONS.bowl} Order Now
+                        <a href="#/product/${p.id}" class="hero-slide-btn ${p.isDailySpecial ? 'hero-slide-btn-special' : ''} btn-ripple">
+                          ${p.isDailySpecial ? `${ICONS.sparkle} Order Daily Special` : `${ICONS.bowl} Order Now`}
                         </a>
                         <div class="hero-slider-dots">
-                          ${featuredProducts.map((_, dotIdx) => `
-                            <button class="hero-slider-dot ${dotIdx === idx ? 'active' : ''}" data-dot-index="${dotIdx}" aria-label="Go to slide ${dotIdx + 1}"></button>
+                          ${heroSlideProducts.map((_, dotIdx) => `
+                            <button class="hero-slider-dot ${dotIdx === idx ? 'active' : ''} ${heroSlideProducts[dotIdx].isDailySpecial ? 'dot-special' : ''}" data-dot-index="${dotIdx}" aria-label="Go to slide ${dotIdx + 1}"></button>
                           `).join('')}
                         </div>
                       </div>
@@ -112,29 +126,6 @@ export function renderHomePage() {
           <p class="tamil-text" style="color: var(--gold-700); margin-top: var(--space-2);">எங்கள் பாரம்பரிய உணவு வகைகள்</p>
         </div>
 
-        <!-- Category Filter Pills -->
-        <div class="category-filter-nav reveal">
-          <button class="category-filter-pill active" onclick="location.hash='#/shop'">
-            <span>${ICONS.list} All Items</span>
-            <span class="pill-badge">25</span>
-          </button>
-          <button class="category-filter-pill" onclick="location.hash='#/shop?category=kanji'">
-            <span>${ICONS.bowl} Kanji Varieties</span>
-            <span class="pill-badge">21</span>
-          </button>
-          <button class="category-filter-pill" onclick="location.hash='#/shop?category=daily-spl'">
-            <span>${ICONS.sparkle} Daily Special</span>
-            <span class="pill-badge">1</span>
-          </button>
-          <button class="category-filter-pill" onclick="location.hash='#/shop?category=solid-eats'">
-            <span>${ICONS.salad} Healthy Snacks</span>
-            <span class="pill-badge">2</span>
-          </button>
-          <button class="category-filter-pill" onclick="location.hash='#/shop?category=traditional-sweets'">
-            <span>${ICONS.pot} Traditional Sweets</span>
-            <span class="pill-badge">1</span>
-          </button>
-        </div>
 
         <!-- Rich Visual Category Cards -->
         <div class="grid-4 reveal-stagger">
@@ -225,49 +216,6 @@ export function renderHomePage() {
           `;}).join('')}
         </div>
 
-        <!-- Dedicated Healthy Snacks Spotlight (Sprouted Pulses + Boiled Egg) -->
-        <div class="solid-eats-spotlight reveal" style="margin-top: var(--space-8); background: white; border: 1.5px solid rgba(212, 160, 23, 0.28); border-radius: var(--radius-2xl); padding: var(--space-6) var(--space-8); box-shadow: 0 10px 28px rgba(0,0,0,0.06);">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:var(--space-4); margin-bottom: var(--space-6);">
-            <div>
-              <span class="section-badge">${ICONS.salad} HEALTHY SNACKS SPOTLIGHT (ஆரோக்கிய சிற்றுண்டிகள்)</span>
-              <h3 style="font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 800; color: var(--primary-900); margin: var(--space-1) 0;">
-                Sprouted Pulses & Farm-Fresh Boiled Eggs
-              </h3>
-              <p class="tamil-text" style="color: var(--gold-700); font-size: var(--text-sm);">
-                பாரம்பரிய கஞ்சியோடு சேர்த்து உண்ணும் 2 சிறந்த ஊட்டச்சத்து உணவுகள் — 100% இயற்கை புரதம்
-              </p>
-            </div>
-            <a href="#/shop?category=solid-eats" class="btn btn-outline btn-sm btn-ripple">
-              View Healthy Snacks Menu ${ICONS.arrowRight}
-            </a>
-          </div>
-
-          <div class="grid-2 reveal-stagger">
-            ${PRODUCTS.filter(p => p.category === 'solid-eats').map(p => renderProductCard(p)).join('')}
-          </div>
-        </div>
-
-        <!-- Dedicated Traditional Sweets Spotlight (Ulundhan Kali) -->
-        <div class="traditional-sweets-spotlight reveal" style="margin-top: var(--space-8); background: white; border: 1.5px solid rgba(212, 160, 23, 0.28); border-radius: var(--radius-2xl); padding: var(--space-6) var(--space-8); box-shadow: 0 10px 28px rgba(0,0,0,0.06);">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:var(--space-4); margin-bottom: var(--space-6);">
-            <div>
-              <span class="section-badge">${ICONS.pot} TRADITIONAL SWEETS (பாரம்பரிய இனிப்புகள்)</span>
-              <h3 style="font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 800; color: var(--primary-900); margin: var(--space-1) 0;">
-                Traditional Sweets · பாரம்பரிய உளுந்தங்களி
-              </h3>
-              <p class="tamil-text" style="color: var(--gold-700); font-size: var(--text-sm);">
-                கருப்பு உளுந்து, சுத்தமான கருப்பட்டி & செக்கு நல்லெண்ணெய் கொண்டு பாரம்பரிய முறையில் தயார் செய்யப்பட்டது
-              </p>
-            </div>
-            <a href="#/shop?category=traditional-sweets" class="btn btn-outline btn-sm btn-ripple">
-              View Sweets Menu ${ICONS.arrowRight}
-            </a>
-          </div>
-
-          <div class="grid-products reveal-stagger">
-            ${PRODUCTS.filter(p => p.category === 'traditional-sweets').map(p => renderProductCard(p)).join('')}
-          </div>
-        </div>
 
         <!-- Heritage Quality Ribbon Strip -->
         <div class="category-heritage-ribbon reveal">
@@ -303,77 +251,6 @@ export function renderHomePage() {
       </div>
     </section>
 
-    <!-- 🌟 Sunrise Daily Special Spotlight Banner -->
-    <section class="section section-scroll-blur" style="padding-top: var(--space-2); padding-bottom: var(--space-8);">
-      <div class="container">
-        <div class="daily-special-sunrise-card reveal glow-border">
-          <div class="special-card-left">
-            <div class="special-card-media">
-              <img src="${dailySpecial.image}" alt="${dailySpecial.name}" class="special-card-img" />
-              <div class="special-card-stamp">
-                <span class="pulse-dot-green"></span>
-                <span>TODAY'S SPECIAL · இன்றைய சிறப்பு</span>
-              </div>
-            </div>
-          </div>
-          <div class="special-card-right">
-            <div class="special-tag-row">
-              <span class="section-badge">${ICONS.sparkle} CHEF'S SUNRISE CURATION</span>
-              <span class="special-tag-hot">${ICONS.fire} Brewed Fresh Today</span>
-            </div>
-            <h2 class="display-heading special-title">${dailySpecial.name}</h2>
-            <div class="tamil-text special-tamil">${dailySpecial.tamilName}</div>
-            <p class="special-desc">${dailySpecial.description}</p>
-            
-            <div class="special-nutrition-chips">
-              <span class="nutrition-chip">${ICONS.leaf} ${dailySpecial.nutrition.calories} kcal</span>
-              <span class="nutrition-chip">${ICONS.pot} ${dailySpecial.nutrition.protein} Protein</span>
-              <span class="nutrition-chip">${ICONS.mortar} ${dailySpecial.nutrition.iron} Iron</span>
-              <span class="nutrition-chip">${ICONS.shieldCheck} 100% Traditional</span>
-            </div>
-
-            <div class="special-price-action-row">
-              <div class="special-pricing">
-                <span class="special-curr-price">₹${dailySpecial.price}</span>
-                <span class="special-old-price">₹${dailySpecial.originalPrice}</span>
-                <span class="special-discount-badge">Save ₹${dailySpecial.originalPrice - dailySpecial.price}</span>
-              </div>
-              <div class="special-action-buttons">
-                <button class="btn btn-primary btn-lg btn-ripple" onclick="window.addToCart(${dailySpecial.id}, 1)">
-                  ${ICONS.cart} Order Today's Special
-                </button>
-                <a href="#/product/${dailySpecial.id}" class="btn btn-ghost btn-lg btn-ripple">
-                  Recipe Details ${ICONS.arrowRight}
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Featured Products - Best Sellers -->
-    <section class="section section-scroll-blur">
-      <div class="container">
-        <div class="section-header reveal">
-          <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:var(--space-4);">
-            <div>
-              <span class="section-badge">${ICONS.fire} HANDCRAFTED KANJI</span>
-              <h2 class="display-heading">Best Sellers</h2>
-              <p class="tamil-text" style="color: var(--gold-700); margin-top: var(--space-2);">எங்கள் சிறந்த விற்பனை கஞ்சி வகைகள்</p>
-            </div>
-            <a href="#/shop" class="btn btn-outline btn-ripple" style="margin-top:var(--space-4);">View All Menu ${ICONS.arrowRight}</a>
-          </div>
-        </div>
-        <div class="products-scroll-wrapper reveal">
-          <div class="products-scroll" id="featuredScroll">
-            ${featuredProducts.map(p => renderProductCard(p)).join('')}
-          </div>
-          <button class="scroll-btn scroll-left" onclick="document.getElementById('featuredScroll').scrollBy({left:-310,behavior:'smooth'})">${ICONS.arrowLeft}</button>
-          <button class="scroll-btn scroll-right" onclick="document.getElementById('featuredScroll').scrollBy({left:310,behavior:'smooth'})">${ICONS.arrowRight}</button>
-        </div>
-      </div>
-    </section>
 
     <!-- Tamil Heritage Section -->
     <section class="section section-dark kolam-bg kolam-dark section-scroll-blur">
@@ -401,21 +278,6 @@ export function renderHomePage() {
       </div>
     </section>
 
-    <!-- New Arrivals -->
-    ${newProducts.length > 0 ? `
-    <section class="section section-scroll-blur">
-      <div class="container">
-        <div class="section-header reveal">
-          <span class="section-badge">${ICONS.sparkle} NEW ARRIVALS</span>
-          <h2>Fresh Additions</h2>
-          <p>புதிய சேர்க்கைகள் — Newly added to our traditional menu</p>
-        </div>
-        <div class="grid-products reveal-stagger">
-          ${newProducts.map(p => renderProductCard(p)).join('')}
-        </div>
-      </div>
-    </section>
-    ` : ''}
 
     <!-- Testimonials -->
     <section class="section section-cream section-scroll-blur">

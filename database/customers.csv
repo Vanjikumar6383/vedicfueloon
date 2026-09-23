@@ -1,0 +1,1 @@
+customer_id,customer_code,first_name,last_name,email_masked,email_hash,phone_masked,phone_hash,password_hash,street_address,city,state,postal_code,customer_tier,total_orders,total_spent,consent_dpdp,consent_marketing,is_verified,is_active,created_at,updated_at,is_deleted

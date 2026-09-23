@@ -23,6 +23,7 @@ import { renderAdminDashboard } from './admin/dashboard.js';
 import { renderAdminProducts, initAdminProductHandlers } from './admin/products.js';
 import { renderAdminOrders, initAdminOrderHandlers } from './admin/orders.js';
 import { renderAdminCustomers, initAdminCustomerHandlers } from './admin/customers.js';
+import { renderAdminEBilling, initAdminEBillingHandlers } from './admin/ebilling.js';
 
 // ── App State ──
 const app = document.getElementById('app');
@@ -165,6 +166,10 @@ function handleAdminRoute(path, params) {
       adminContent = renderAdminDashboard();
       activeSection = 'dashboard';
       break;
+    case '/admin/ebilling':
+      adminContent = renderAdminEBilling();
+      activeSection = 'ebilling';
+      break;
     case '/admin/products':
       adminContent = renderAdminProducts();
       activeSection = 'products';
@@ -197,11 +202,14 @@ function handleAdminRoute(path, params) {
           <button class="admin-nav-item ${activeSection === 'dashboard' ? 'active' : ''}" onclick="window.adminNavigate('dashboard')">
             <span class="nav-icon">${ICONS.barChart}</span> Dashboard
           </button>
-          <button class="admin-nav-item ${activeSection === 'products' ? 'active' : ''}" onclick="window.adminNavigate('products')">
-            <span class="nav-icon">${ICONS.bowl}</span> Products
+          <button class="admin-nav-item ${activeSection === 'ebilling' ? 'active' : ''}" onclick="window.adminNavigate('ebilling')">
+            <span class="nav-icon">${ICONS.receipt}</span> E-Billing Hub
           </button>
           <button class="admin-nav-item ${activeSection === 'orders' ? 'active' : ''}" onclick="window.adminNavigate('orders')">
             <span class="nav-icon">${ICONS.package}</span> Orders
+          </button>
+          <button class="admin-nav-item ${activeSection === 'products' ? 'active' : ''}" onclick="window.adminNavigate('products')">
+            <span class="nav-icon">${ICONS.bowl}</span> Products
           </button>
           <button class="admin-nav-item ${activeSection === 'customers' ? 'active' : ''}" onclick="window.adminNavigate('customers')">
             <span class="nav-icon">${ICONS.users}</span> Customers
@@ -219,16 +227,32 @@ function handleAdminRoute(path, params) {
         </button>
       </aside>
       
-      <main class="admin-main page-enter">
+      <main class="admin-main">
         ${adminContent}
       </main>
     </div>
   `;
+
+  // Attach dynamic handlers for rendered section
+  if (activeSection === 'products') {
+    initAdminProductHandlers();
+  } else if (activeSection === 'orders') {
+    initAdminOrderHandlers();
+  } else if (activeSection === 'customers') {
+    initAdminCustomerHandlers();
+  } else if (activeSection === 'ebilling') {
+    initAdminEBillingHandlers();
+  }
 }
 
 // ── Admin Navigation Helper ──
 window.adminNavigate = function(section) {
-  location.hash = `#/admin/${section}`;
+  const target = `#/admin/${section}`;
+  if (location.hash === target) {
+    handleRoute();
+  } else {
+    location.hash = target;
+  }
 };
 
 // ── Admin Logout ──
@@ -242,6 +266,17 @@ window.adminLogout = function() {
 window.navigateTo = function(hash) {
   // Force re-render even if same hash
   handleRoute();
+};
+
+// ── Clear All Data (Empty Tables for Future Ingestion) ──
+window.clearAllStoreData = function() {
+  if (confirm('Are you sure you want to empty all orders, customers, and transactions? All tables will be set to 0 rows, ready for future data.')) {
+    Orders.clear();
+    Customers.clear();
+    Cart.clear();
+    showToast('Database Tables Reset', 'All orders & customers cleared. 0 rows ready for future live data.', 'info');
+    handleRoute();
+  }
 };
 
 // ── Global Add to Cart ──
@@ -333,18 +368,18 @@ document.addEventListener('dblclick', (e) => {
   }
 });
 
-// ── Glassmorphism Navbar Scroll State ──
-window.addEventListener('scroll', () => {
-  const navbar = document.getElementById('navbar');
-  if (navbar) {
-    navbar.classList.toggle('scrolled', window.scrollY > 30);
+// ── Close Modals on Escape Key ──
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+      modal.classList.remove('active');
+    });
   }
-}, { passive: true });
+});
 
 // ── Initialize App ──
 function init() {
-  // Seed demo data for admin
-  seedDemoData();
+  // Demo seeding disabled: tables start clean and empty for future live data
   
   // Init all handlers
   initShopHandlers();
@@ -356,6 +391,7 @@ function init() {
   initAdminProductHandlers();
   initAdminOrderHandlers();
   initAdminCustomerHandlers();
+  initAdminEBillingHandlers();
 
   // Listen for route changes
   window.addEventListener('hashchange', handleRoute);

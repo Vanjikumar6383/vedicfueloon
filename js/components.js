@@ -67,6 +67,7 @@ export const ICONS = {
   flower: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2a4 4 0 0 0-4 4c0 3 4 6 4 6s4-3 4-6a4 4 0 0 0-4-4z"></path><path d="M12 22a4 4 0 0 0 4-4c0-3-4-6-4-6s-4 3-4 6a4 4 0 0 0 4 4z"></path><path d="M2 12a4 4 0 0 0 4 4c3 0 6-4 6-4s-3-4-6-4a4 4 0 0 0-4 4z"></path><path d="M22 12a4 4 0 0 0-4-4c-3 0-6 4-6 4s3 4 6 4a4 4 0 0 0 4-4z"></path></svg>`,
   checkCircle: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
   shieldCheck: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>`,
+  receipt: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="13" y2="15"></line></svg>`,
 };
 
 // ── Navbar ──
@@ -183,10 +184,10 @@ export function renderFooter() {
               <h4>Direct Connect</h4>
               <ul class="footer-exclusive-channels">
                 <li>
-                  <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20order%20from%20VedicFueloon" target="_blank" rel="noopener" class="footer-channel-link">
+                  <a href="https://wa.me/919876543210?text=Hi!%20I%20have%20an%20inquiry%20regarding%20VedicFueloon" target="_blank" rel="noopener" class="footer-channel-link">
                     <span class="channel-link-logo">${ICONS.realWhatsapp}</span>
                     <div class="channel-link-meta">
-                      <span class="channel-link-title">WhatsApp Order</span>
+                      <span class="channel-link-title">WhatsApp Support</span>
                       <span class="channel-link-sub">+91 98765 43210</span>
                     </div>
                   </a>
@@ -201,7 +202,7 @@ export function renderFooter() {
                   </a>
                 </li>
                 <li class="footer-channels-note">
-                  <span class="pulse-dot"></span> WhatsApp & Instagram Only
+                  <span class="pulse-dot"></span> WhatsApp & Instagram Inquiries
                 </li>
               </ul>
             </div>
