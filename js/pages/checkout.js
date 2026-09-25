@@ -5,6 +5,7 @@
 import { Cart, Orders } from '../store.js';
 import { formatPrice, showToast, ICONS } from '../components.js';
 import { printEBill } from '../ebill.js';
+import { escapeHTML, sanitizeText, validatePhone, validateEmail } from '../security.js';
 
 export function renderCheckoutPage() {
   const items = Cart.get();
@@ -103,18 +104,24 @@ export function renderCheckoutPage() {
               ${ICONS.shoppingBag} Order Summary
             </h3>
             
-            ${items.map(item => `
-              <div style="display:flex; justify-content:space-between; align-items:center; padding:var(--space-3) 0; border-bottom:1px solid var(--cream-100);">
-                <div style="display:flex; align-items:center; gap:var(--space-3);">
-                  ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width:40px;height:40px;object-fit:cover;border-radius:var(--radius-md);flex-shrink:0;" />` : ''}
-                  <div>
-                    <div style="font-weight:600; font-size:var(--text-sm);">${item.name}</div>
-                    <div style="font-size:var(--text-xs); color:var(--neutral-400);">Qty: ${item.qty}</div>
+            ${items.map(item => {
+              const safeName = escapeHTML(item.name);
+              const safeImg = escapeHTML(item.image || '');
+              const safeQty = Math.max(1, parseInt(item.qty, 10) || 1);
+              const price = Number(item.price) || 0;
+              return `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:var(--space-3) 0; border-bottom:1px solid var(--cream-100);">
+                  <div style="display:flex; align-items:center; gap:var(--space-3);">
+                    ${safeImg ? `<img src="${safeImg}" alt="${safeName}" style="width:40px;height:40px;object-fit:cover;border-radius:var(--radius-md);flex-shrink:0;" />` : ''}
+                    <div>
+                      <div style="font-weight:600; font-size:var(--text-sm);">${safeName}</div>
+                      <div style="font-size:var(--text-xs); color:var(--neutral-400);">Qty: ${safeQty}</div>
+                    </div>
                   </div>
+                  <div style="font-weight:600;">${formatPrice(price * safeQty)}</div>
                 </div>
-                <div style="font-weight:600;">${formatPrice(item.price * item.qty)}</div>
-              </div>
-            `).join('')}
+              `;
+            }).join('')}
             
             <div class="summary-row" style="margin-top:var(--space-4);">
               <span>Subtotal</span>
@@ -136,6 +143,12 @@ export function renderCheckoutPage() {
 }
 
 export function renderOrderConfirmation(order) {
+  const safeOrderId = escapeHTML(order.id);
+  const safeInvoiceNo = escapeHTML(order.invoiceNo || order.id);
+  const safePayMethod = escapeHTML(order.paymentMethod || 'UPI');
+  const safePayStatus = escapeHTML(order.paymentStatus || 'Paid');
+  const itemsCount = Array.isArray(order.items) ? order.items.length : 0;
+
   return `
     <section class="section">
       <div class="container">
@@ -149,11 +162,11 @@ export function renderOrderConfirmation(order) {
           <div style="background:var(--cream-50); border-radius:var(--radius-xl); padding:var(--space-6) var(--space-8); max-width:580px; margin:0 auto; text-align:left; border:1px solid var(--cream-200);">
             <div style="display:flex; justify-content:space-between; margin-bottom:var(--space-3);">
               <span style="color:var(--neutral-500);">Order ID</span>
-              <strong style="font-family:var(--font-mono, monospace);">${order.id}</strong>
+              <strong style="font-family:var(--font-mono, monospace);">${safeOrderId}</strong>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:var(--space-3);">
               <span style="color:var(--neutral-500);">Items</span>
-              <strong>${order.items.length} products</strong>
+              <strong>${itemsCount} products</strong>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:var(--space-3);">
               <span style="color:var(--neutral-500);">Total</span>
@@ -171,7 +184,7 @@ export function renderOrderConfirmation(order) {
               <div>
                 <span class="checkout-ebill-pill">${ICONS.sparkle} OFFICIAL TAX INVOICE / E-BILL READY</span>
                 <div style="font-family:var(--font-mono, monospace); font-weight:800; font-size:var(--text-lg); color:var(--primary-900); margin-top:4px;">
-                  Invoice No: ${order.invoiceNo || order.id}
+                  Invoice No: ${safeInvoiceNo}
                 </div>
               </div>
               <span class="badge" style="background:rgba(39, 174, 96, 0.15); color:#27ae60; font-weight:700; padding:6px 12px; border-radius:var(--radius-full); font-size:12px;">
@@ -186,11 +199,11 @@ export function renderOrderConfirmation(order) {
             <div style="background:var(--cream-50); border:1px dashed rgba(212, 160, 23, 0.4); border-radius:var(--radius-lg); padding:var(--space-3) var(--space-4); display:flex; justify-content:space-between; align-items:center; font-size:var(--text-xs); margin-bottom:var(--space-4); flex-wrap:wrap; gap:8px;">
               <div>
                 <span style="color:var(--neutral-400);">Payment Method:</span> 
-                <strong style="color:#27ae60;">${order.paymentStatus || 'Paid'}</strong> (${order.paymentMethod || 'UPI'})
+                <strong style="color:#27ae60;">${safePayStatus}</strong> (${safePayMethod})
               </div>
               <div>
                 <span style="color:var(--neutral-400);">Products:</span> 
-                <strong>${order.items.length} items</strong>
+                <strong>${itemsCount} items</strong>
               </div>
               <div>
                 <span style="color:var(--neutral-400);">Net Total:</span> 
@@ -199,16 +212,16 @@ export function renderOrderConfirmation(order) {
             </div>
 
             <div class="checkout-ebill-actions">
-              <button class="btn btn-primary btn-ripple btn-sm" onclick="window.downloadEBill('${order.id}')" style="flex:1; min-width:180px; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+              <button class="btn btn-primary btn-ripple btn-sm" onclick="window.downloadEBill('${safeOrderId}')" style="flex:1; min-width:180px; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 Download Official E-Bill (PDF)
               </button>
               
-              <button class="btn btn-outline btn-ripple btn-sm" onclick="window.previewEBill('${order.id}')" style="display:inline-flex; align-items:center; gap:6px;">
+              <button class="btn btn-outline btn-ripple btn-sm" onclick="window.previewEBill('${safeOrderId}')" style="display:inline-flex; align-items:center; gap:6px;">
                 ${ICONS.eye} View E-Bill
               </button>
               
-              <button class="btn btn-ghost btn-ripple btn-sm" onclick="window.printEBillDirect('${order.id}')" style="display:inline-flex; align-items:center; gap:6px;">
+              <button class="btn btn-ghost btn-ripple btn-sm" onclick="window.printEBillDirect('${safeOrderId}')" style="display:inline-flex; align-items:center; gap:6px;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
                 Print
               </button>
@@ -227,29 +240,70 @@ export function renderOrderConfirmation(order) {
 
 export function initCheckoutHandlers() {
   window.placeOrder = function() {
-    const name = document.getElementById('checkoutName')?.value.trim();
-    const phone = document.getElementById('checkoutPhone')?.value.trim();
-    const address = document.getElementById('checkoutAddress')?.value.trim();
-    const email = document.getElementById('checkoutEmail')?.value.trim();
-    const notes = document.getElementById('checkoutNotes')?.value.trim();
+    const rawName = document.getElementById('checkoutName')?.value || '';
+    const rawPhone = document.getElementById('checkoutPhone')?.value || '';
+    const rawAddress = document.getElementById('checkoutAddress')?.value || '';
+    const rawEmail = document.getElementById('checkoutEmail')?.value || '';
+    const rawNotes = document.getElementById('checkoutNotes')?.value || '';
     const paymentMethodEl = document.querySelector('input[name="checkoutPayment"]:checked');
     const paymentMethod = paymentMethodEl ? paymentMethodEl.value : 'UPI';
     const errorEl = document.getElementById('checkoutError');
 
-    if (!name || !phone || !address) {
-      if (errorEl) { errorEl.style.display = 'block'; }
+    const name = sanitizeText(rawName, 80);
+    const phone = sanitizeText(rawPhone, 20);
+    const address = sanitizeText(rawAddress, 300);
+    const email = sanitizeText(rawEmail, 100);
+    const notes = sanitizeText(rawNotes, 300);
+
+    // Strict validation
+    if (!name || name.length < 2) {
+      if (errorEl) { 
+        errorEl.textContent = 'Please enter a valid full name (at least 2 letters).'; 
+        errorEl.style.display = 'block'; 
+      }
       return;
     }
 
+    if (!phone || !validatePhone(phone)) {
+      if (errorEl) { 
+        errorEl.textContent = 'Please enter a valid phone number (10-digit mobile number, e.g. 9876543210).'; 
+        errorEl.style.display = 'block'; 
+      }
+      return;
+    }
+
+    if (email && !validateEmail(email)) {
+      if (errorEl) { 
+        errorEl.textContent = 'Please enter a valid email address (e.g., patron@domain.com).'; 
+        errorEl.style.display = 'block'; 
+      }
+      return;
+    }
+
+    if (!address || address.length < 10) {
+      if (errorEl) { 
+        errorEl.textContent = 'Please enter your complete delivery address including area and pincode (min 10 characters).'; 
+        errorEl.style.display = 'block'; 
+      }
+      return;
+    }
+
+    if (errorEl) errorEl.style.display = 'none';
+
     const customerInfo = { name, phone, address, email, notes, paymentMethod };
     const cartItems = Cart.get();
+    if (cartItems.length === 0) {
+      showToast('Cart Empty', 'Please add items before checking out.', 'error');
+      location.hash = '#/shop';
+      return;
+    }
+
     const order = Orders.create(customerInfo, cartItems, { paymentMethod });
 
     // Render confirmation
     const app = document.getElementById('pageContent');
     if (app) {
-      const { renderOrderConfirmation: renderConfirm } = { renderOrderConfirmation };
-      app.innerHTML = renderConfirm(order);
+      app.innerHTML = renderOrderConfirmation(order);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
       // Re-init scroll reveal

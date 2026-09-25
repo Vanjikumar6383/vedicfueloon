@@ -7,6 +7,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { Cart, AdminAuth, seedDemoData } from './store.js';
 import { PRODUCTS, getProductById } from './data.js';
 import { renderNavbar, renderFooter, showToast, updateCartBadge, initScrollReveal, setActiveNav, ICONS } from './components.js';
+import { safeDecodeURI } from './security.js';
 
 // Page imports
 import { renderHomePage, initHomeHandlers } from './pages/home.js';
@@ -28,15 +29,17 @@ import { renderAdminEBilling, initAdminEBillingHandlers } from './admin/ebilling
 // ── App State ──
 const app = document.getElementById('app');
 
-// ── Parse Hash Route ──
+// ── Parse Hash Route (Hardened against malformed URI crashes) ──
 function parseRoute(hash) {
-  const cleanHash = hash.replace('#', '') || '/';
+  const cleanHash = (hash || '').replace('#', '') || '/';
   const [path, queryString] = cleanHash.split('?');
   const params = {};
   if (queryString) {
     queryString.split('&').forEach(pair => {
       const [key, value] = pair.split('=');
-      params[key] = decodeURIComponent(value);
+      if (key) {
+        params[key] = safeDecodeURI(value || '');
+      }
     });
   }
   return { path, params };
@@ -188,42 +191,74 @@ function handleAdminRoute(path, params) {
   }
 
   app.innerHTML = `
-    <div class="admin-layout">
-      <aside class="admin-sidebar">
-        <div class="admin-brand">
-          <img src="./vedicfueloon logo.jpeg" alt="VedicFueloon" />
-          <div>
-            <div class="admin-brand-text">Vedic<span>Fueloon</span></div>
-            <span class="admin-brand-sub">Admin Panel</span>
+    <div class="admin-layout" id="adminLayout">
+      <!-- Mobile Admin Top Bar (Visible only on < 768px screens) -->
+      <header class="admin-mobile-header" id="adminMobileHeader">
+        <div class="admin-mobile-header-left">
+          <button class="admin-mobile-toggle-btn" id="adminMobileMenuToggle" aria-label="Open Admin Menu" aria-expanded="false">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <div class="admin-mobile-brand">
+            <img src="./vedicfueloon logo.jpeg" alt="VedicFueloon" class="admin-mobile-logo" />
+            <div class="admin-mobile-title">
+              <span>VedicFueloon</span>
+              <span class="admin-mobile-badge">Admin</span>
+            </div>
           </div>
+        </div>
+        <div class="admin-mobile-header-right">
+          <a href="#/" class="admin-mobile-store-link" title="View Store">
+            ${ICONS.home}
+            <span class="d-none d-sm-inline">Store</span>
+          </a>
+          <div class="admin-avatar-sm" title="Master Admin">VF</div>
+        </div>
+      </header>
+
+      <!-- Backdrop overlay for mobile drawer -->
+      <div class="admin-backdrop" id="adminMobileBackdrop"></div>
+
+      <!-- Admin Sidebar (Offcanvas on Mobile, Sticky Column on Desktop) -->
+      <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-sidebar-header">
+          <div class="admin-brand">
+            <img src="./vedicfueloon logo.jpeg" alt="VedicFueloon" />
+            <div>
+              <div class="admin-brand-text">Vedic<span>Fueloon</span></div>
+              <span class="admin-brand-sub">Admin Panel</span>
+            </div>
+          </div>
+          <button class="admin-sidebar-close-btn d-md-none" id="adminSidebarCloseBtn" aria-label="Close Admin Menu">
+            ${ICONS.x}
+          </button>
         </div>
         
         <nav class="admin-nav">
           <button class="admin-nav-item ${activeSection === 'dashboard' ? 'active' : ''}" onclick="window.adminNavigate('dashboard')">
-            <span class="nav-icon">${ICONS.barChart}</span> Dashboard
+            <span class="nav-icon">${ICONS.barChart}</span> <span>Dashboard</span>
           </button>
           <button class="admin-nav-item ${activeSection === 'ebilling' ? 'active' : ''}" onclick="window.adminNavigate('ebilling')">
-            <span class="nav-icon">${ICONS.receipt}</span> E-Billing Hub
+            <span class="nav-icon">${ICONS.receipt}</span> <span>E-Billing Hub</span>
           </button>
           <button class="admin-nav-item ${activeSection === 'orders' ? 'active' : ''}" onclick="window.adminNavigate('orders')">
-            <span class="nav-icon">${ICONS.package}</span> Orders
+            <span class="nav-icon">${ICONS.package}</span> <span>Orders</span>
           </button>
           <button class="admin-nav-item ${activeSection === 'products' ? 'active' : ''}" onclick="window.adminNavigate('products')">
-            <span class="nav-icon">${ICONS.bowl}</span> Products
+            <span class="nav-icon">${ICONS.bowl}</span> <span>Products & Stock</span>
           </button>
           <button class="admin-nav-item ${activeSection === 'customers' ? 'active' : ''}" onclick="window.adminNavigate('customers')">
-            <span class="nav-icon">${ICONS.users}</span> Customers
+            <span class="nav-icon">${ICONS.users}</span> <span>Customers</span>
           </button>
           
           <div class="admin-nav-divider"></div>
           
           <a class="admin-nav-item" href="#/" style="text-decoration:none;">
-            <span class="nav-icon">${ICONS.home}</span> View Store
+            <span class="nav-icon">${ICONS.home}</span> <span>View Store</span>
           </a>
         </nav>
         
         <button class="admin-logout" onclick="window.adminLogout()">
-          <span class="nav-icon">${ICONS.logOut}</span> Logout
+          <span class="nav-icon">${ICONS.logOut}</span> <span>Logout</span>
         </button>
       </aside>
       
@@ -232,6 +267,9 @@ function handleAdminRoute(path, params) {
       </main>
     </div>
   `;
+
+  // Setup mobile drawer interactivity
+  setupAdminMobileDrawer();
 
   // Attach dynamic handlers for rendered section
   if (activeSection === 'products') {
@@ -243,6 +281,68 @@ function handleAdminRoute(path, params) {
   } else if (activeSection === 'ebilling') {
     initAdminEBillingHandlers();
   }
+}
+
+// ── Setup Admin Mobile Drawer ──
+function setupAdminMobileDrawer() {
+  const toggleBtn = document.getElementById('adminMobileMenuToggle');
+  const sidebar = document.getElementById('adminSidebar');
+  const backdrop = document.getElementById('adminMobileBackdrop');
+  const closeBtn = document.getElementById('adminSidebarCloseBtn');
+
+  if (!toggleBtn || !sidebar || !backdrop) return;
+
+  const openDrawer = () => {
+    sidebar.classList.add('mobile-open');
+    backdrop.classList.add('active');
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeDrawer = () => {
+    sidebar.classList.remove('mobile-open');
+    backdrop.classList.remove('active');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  };
+
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (sidebar.classList.contains('mobile-open')) {
+      closeDrawer();
+    } else {
+      openDrawer();
+    }
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeDrawer);
+  }
+
+  backdrop.addEventListener('click', closeDrawer);
+
+  // Close drawer when any nav link inside sidebar is clicked
+  sidebar.querySelectorAll('.admin-nav-item, .admin-logout').forEach(item => {
+    item.addEventListener('click', closeDrawer);
+  });
+
+  // Close on Escape key
+  const handleEscape = (e) => {
+    if (e.key === 'Escape' && sidebar.classList.contains('mobile-open')) {
+      closeDrawer();
+    }
+  };
+  document.removeEventListener('keydown', handleEscape);
+  document.addEventListener('keydown', handleEscape);
+
+  // Auto-close on resize to desktop
+  const handleResize = () => {
+    if (window.innerWidth >= 768 && sidebar.classList.contains('mobile-open')) {
+      closeDrawer();
+    }
+  };
+  window.removeEventListener('resize', handleResize);
+  window.addEventListener('resize', handleResize);
 }
 
 // ── Admin Navigation Helper ──

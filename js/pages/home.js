@@ -316,7 +316,7 @@ export function renderHomePage() {
         </p>
         <div style="display:flex; gap:var(--space-4); justify-content:center; flex-wrap:wrap; align-items:center;">
           <a href="#/shop" class="btn btn-primary btn-lg btn-ripple">${ICONS.bowl} Order Now</a>
-          <a href="https://instagram.com/vedicfueloon" target="_blank" rel="noopener" class="btn btn-ghost btn-lg btn-ripple" style="display:inline-flex; align-items:center; gap:8px;">
+          <a href="https://instagram.com/vedicfueloon" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-lg btn-ripple" style="display:inline-flex; align-items:center; gap:8px;">
             <span style="width:24px; height:24px; display:inline-block;">${ICONS.realInstagram}</span> Instagram DM
           </a>
         </div>

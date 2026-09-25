@@ -112,7 +112,7 @@ export function renderContactPage() {
 
               <!-- Primary Action Button -->
               <a href="https://wa.me/919876543210?text=Hi!%20I%20have%20an%20inquiry%20regarding%20VedicFueloon" 
-                 target="_blank" rel="noopener" class="comm-primary-btn wa-primary-btn btn-ripple">
+                 target="_blank" rel="noopener noreferrer" class="comm-primary-btn wa-primary-btn btn-ripple">
                 <span class="btn-brand-icon">${ICONS.realWhatsapp}</span>
                 <span>Chat with Support on WhatsApp (+91 98765 43210)</span>
                 <span class="btn-arrow">${ICONS.arrowRight}</span>
@@ -123,15 +123,15 @@ export function renderContactPage() {
                 <div class="prompts-label">Quick Support Inquiries (Tap to chat):</div>
                 <div class="prompts-chips">
                   <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20learn%20more%20about%20your%20traditional%20Kanji%20ingredients." 
-                     target="_blank" rel="noopener" class="prompt-chip">
+                     target="_blank" rel="noopener noreferrer" class="prompt-chip">
                     ${ICONS.bowl} Kanji Ingredients & Nutrition
                   </a>
                   <a href="https://wa.me/919876543210?text=Hi!%20What%20are%20your%20sunrise%20delivery%20timings%20and%20service%20areas%3F" 
-                     target="_blank" rel="noopener" class="prompt-chip">
+                     target="_blank" rel="noopener noreferrer" class="prompt-chip">
                     ${ICONS.truck} Delivery Area & Timings
                   </a>
                   <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20inquire%20about%20bulk%20catering%20for%20a%20family%20event." 
-                     target="_blank" rel="noopener" class="prompt-chip">
+                     target="_blank" rel="noopener noreferrer" class="prompt-chip">
                     ${ICONS.wheat} Bulk Event Catering
                   </a>
                 </div>
@@ -159,7 +159,7 @@ export function renderContactPage() {
               <div class="comm-handle-box ig-handle-box">
                 <span class="handle-icon">${ICONS.sparkle}</span>
                 <span class="handle-text">@vedicfueloon</span>
-                <a href="https://instagram.com/vedicfueloon" target="_blank" rel="noopener" class="handle-copy-btn btn-ripple" title="Visit Profile">
+                <a href="https://instagram.com/vedicfueloon" target="_blank" rel="noopener noreferrer" class="handle-copy-btn btn-ripple" title="Visit Profile">
                   ${ICONS.arrowRight} Visit
                 </a>
               </div>
@@ -186,7 +186,7 @@ export function renderContactPage() {
 
               <!-- Primary Action Button -->
               <a href="https://instagram.com/vedicfueloon" 
-                 target="_blank" rel="noopener" class="comm-primary-btn ig-primary-btn btn-ripple">
+                 target="_blank" rel="noopener noreferrer" class="comm-primary-btn ig-primary-btn btn-ripple">
                 <span class="btn-brand-icon">${ICONS.realInstagram}</span>
                 <span>Send Instagram DM (@vedicfueloon)</span>
                 <span class="btn-arrow">${ICONS.arrowRight}</span>
@@ -197,15 +197,15 @@ export function renderContactPage() {
                 <div class="prompts-label">Explore Instagram Highlights (Tap to view):</div>
                 <div class="prompts-chips">
                   <a href="https://instagram.com/vedicfueloon" 
-                     target="_blank" rel="noopener" class="prompt-chip ig-chip">
+                     target="_blank" rel="noopener noreferrer" class="prompt-chip ig-chip">
                     ${ICONS.pot} Watch Stone Grinding Reels
                   </a>
                   <a href="https://instagram.com/vedicfueloon" 
-                     target="_blank" rel="noopener" class="prompt-chip ig-chip">
+                     target="_blank" rel="noopener noreferrer" class="prompt-chip ig-chip">
                     ${ICONS.sparkle} Check Daily Special Batch
                   </a>
                   <a href="https://instagram.com/vedicfueloon" 
-                     target="_blank" rel="noopener" class="prompt-chip ig-chip">
+                     target="_blank" rel="noopener noreferrer" class="prompt-chip ig-chip">
                     ${ICONS.heart} Read Customer Testimonials
                   </a>
                 </div>

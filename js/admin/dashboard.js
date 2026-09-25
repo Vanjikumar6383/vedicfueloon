@@ -1,19 +1,22 @@
 /* ============================================
-   VEDICFUELOON — ADMIN DASHBOARD
+   VEDICFUELOON — ADMIN DASHBOARD (SECURED)
    Stats, Revenue Chart, Recent Orders
+   Secured with Context-Aware HTML Escaping (Anti-XSS)
    ============================================ */
 
-import { Orders, Customers, DailySpecialStore } from '../store.js';
+import { Orders, Customers, DailySpecialStore, ProductsStore } from '../store.js';
 import { PRODUCTS, getDailySpecialProduct } from '../data.js';
 import { formatPrice, formatDate, ICONS, showToast } from '../components.js';
+import { escapeHTML } from '../security.js';
 
 export function renderAdminDashboard() {
   const orders = Orders.get();
   const customers = Customers.get();
   const totalRevenue = Orders.getTotalRevenue();
   const recentOrders = Orders.getRecentOrders(5);
-  const currentSpecial = getDailySpecialProduct();
+  const products = (ProductsStore && ProductsStore.get) ? ProductsStore.get() : PRODUCTS;
   const currentSpecialId = DailySpecialStore.getId();
+  const currentSpecial = products.find(p => p.id === currentSpecialId) || getDailySpecialProduct() || products[0];
   
   // Revenue by day (last 7 days)
   const last7Days = [];
@@ -25,7 +28,7 @@ export function renderAdminDashboard() {
       const orderDate = new Date(o.createdAt);
       return orderDate.toDateString() === date.toDateString() && o.status !== 'cancelled';
     });
-    const dayRevenue = dayOrders.reduce((sum, o) => sum + o.total, 0);
+    const dayRevenue = dayOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
     last7Days.push({ day: dayStr, revenue: dayRevenue });
   }
   const maxRevenue = Math.max(...last7Days.map(d => d.revenue), 1);
@@ -114,72 +117,75 @@ export function renderAdminDashboard() {
     </div>
 
     <!-- 🌟 DAILY SPECIAL MANAGEMENT CARD -->
-    <div class="daily-special-admin-card">
+    <div class="daily-special-admin-card" id="adminDailySpecialCard">
       <div class="special-admin-header">
-        <div style="display:flex; align-items:center; gap:var(--space-3);">
+        <div class="special-admin-header-left">
           <div class="special-sparkle-icon">${ICONS.sparkle}</div>
-          <div>
-            <h3 style="margin:0; font-size:var(--text-lg); font-weight:700; color:var(--gold-400);">Daily Special Manager · இன்றைய சிறப்பு கஞ்சி</h3>
-            <p style="margin:0; font-size:var(--text-xs); color:var(--cream-300);">Choose the featured Daily Special item — instantly updates across the user store & home page</p>
+          <div class="special-admin-header-text">
+            <h3 class="special-admin-title">Daily Special Manager · இன்றைய சிறப்பு கஞ்சி</h3>
+            <p class="special-admin-desc">Choose the featured Daily Special item — instantly updates across user store & home page</p>
           </div>
         </div>
-        <span class="live-pill-badge">
-          <span class="pulse-dot-green"></span>
-          LIVE ON CUSTOMER SCREEN
-        </span>
+        <div class="special-admin-header-right">
+          <span class="live-pill-badge" id="specialLiveBadge">
+            <span class="pulse-dot-green"></span>
+            LIVE ON CUSTOMER SCREEN
+          </span>
+        </div>
       </div>
 
       <div class="special-admin-grid">
         <!-- Current Active Live Preview -->
-        <div class="special-preview-box">
+        <div class="special-preview-box" id="adminSpecialPreviewBox">
           <div class="special-preview-media">
-            <img src="${currentSpecial.image}" alt="${currentSpecial.name}" id="adminSpecialImg" />
-            <span class="special-preview-price">₹${currentSpecial.price}</span>
+            <img src="${escapeHTML(currentSpecial.image || '')}" alt="${escapeHTML(currentSpecial.name || '')}" id="adminSpecialImg" />
+            <span class="special-preview-price" id="adminSpecialPrice">₹${Number(currentSpecial.price) || 0}</span>
           </div>
           <div class="special-preview-details">
             <span class="special-badge-tag">${ICONS.pot} Active Special</span>
-            <h4 id="adminSpecialTitle">${currentSpecial.name}</h4>
-            <div class="tamil-text" id="adminSpecialTamil" style="color:var(--gold-400); font-size:var(--text-sm); font-weight:600;">${currentSpecial.tamilName}</div>
-            <p id="adminSpecialDesc" style="font-size:var(--text-xs); color:var(--cream-300); margin: var(--space-2) 0; line-height:1.5;">${currentSpecial.description.substring(0, 110)}...</p>
-            <div style="display:flex; gap:var(--space-4); font-size:var(--text-xs); color:var(--cream-400); margin-top:8px;">
-              <span>Stock: <strong style="color:var(--gold-400);">${currentSpecial.stock} left</strong></span>
-              <span>Rating: <strong style="color:var(--gold-400);">⭐ ${currentSpecial.rating} (${currentSpecial.reviews})</strong></span>
+            <h4 id="adminSpecialTitle">${escapeHTML(currentSpecial.name || '')}</h4>
+            <div class="tamil-text" id="adminSpecialTamil" style="color:var(--gold-400); font-size:var(--text-sm); font-weight:600;">${escapeHTML(currentSpecial.tamilName || '')}</div>
+            <p id="adminSpecialDesc" style="font-size:var(--text-xs); color:var(--cream-300); margin: var(--space-2) 0; line-height:1.5;">${escapeHTML(currentSpecial.description ? currentSpecial.description.substring(0, 110) + '...' : '')}</p>
+            <div class="special-preview-meta">
+              <span>Stock: <strong id="adminSpecialStock" style="color:var(--gold-400);">${currentSpecial.stock !== undefined ? parseInt(currentSpecial.stock, 10) : 50} left</strong></span>
+              <span>Rating: <strong id="adminSpecialRating" style="color:var(--gold-400);">⭐ ${escapeHTML(String(currentSpecial.rating || '4.9'))} (${parseInt(currentSpecial.reviews, 10) || 100})</strong></span>
             </div>
           </div>
         </div>
 
         <!-- Interactive Selector Controls -->
         <div class="special-controls-box">
-          <label class="form-label" style="color:var(--cream-100); font-weight:600; margin-bottom:var(--space-2); display:block;">
+          <label class="form-label special-controls-label" for="adminDailySpecialSelect">
             Select Daily Special from Catalog:
           </label>
-          <div style="display:flex; gap:var(--space-3); margin-bottom:var(--space-4); flex-wrap:wrap;">
+          <div class="special-select-action-row">
             <select id="adminDailySpecialSelect" class="form-select special-dropdown" onchange="window.previewDailySpecial(this.value)">
-              ${PRODUCTS.map(p => `
+              ${products.map(p => `
                 <option value="${p.id}" ${p.id === currentSpecialId ? 'selected' : ''}>
-                  ${p.name} (${p.tamilName}) — ₹${p.price}
+                  ${escapeHTML(p.name)} (${escapeHTML(p.tamilName)}) — ₹${Number(p.price) || 0}
                 </option>
               `).join('')}
             </select>
-            <button class="btn btn-primary btn-ripple" onclick="window.saveDailySpecial()" style="white-space:nowrap;">
-              ${ICONS.check} Set As Daily Special
+            <button type="button" class="btn btn-primary btn-ripple special-apply-btn" onclick="window.saveDailySpecial()">
+              ${ICONS.check} <span class="btn-text">Set As Daily Special</span>
             </button>
           </div>
 
-          <div style="margin-top:var(--space-3);">
-            <div style="font-size:var(--text-xs); color:var(--gold-400); margin-bottom:var(--space-2); text-transform:uppercase; letter-spacing:0.05em; font-weight:700;">
+          <div class="special-quick-select-wrap">
+            <div class="special-quick-label">
               ⚡ Quick Select Popular Kanji:
             </div>
-            <div class="quick-pick-pills">
+            <div class="quick-pick-pills" id="specialQuickPills">
               ${[1, 2, 3, 10, 15, 20, 23].map(id => {
-                const p = PRODUCTS.find(prod => prod.id === id);
+                const p = products.find(prod => prod.id === id);
                 if (!p) return '';
                 const isSelected = p.id === currentSpecialId;
                 return `
-                  <button class="quick-pick-pill ${isSelected ? 'active' : ''}" 
+                  <button type="button" class="quick-pick-pill ${isSelected ? 'active' : ''}" 
+                          data-product-id="${p.id}"
                           onclick="window.quickSelectDailySpecial(${p.id})">
-                    <span>${p.name}</span>
-                    <span class="pill-price">₹${p.price}</span>
+                    <span>${escapeHTML(p.name)}</span>
+                    <span class="pill-price">₹${Number(p.price) || 0}</span>
                   </button>
                 `;
               }).join('')}
@@ -204,7 +210,7 @@ export function renderAdminDashboard() {
             <div class="bar">
               <div class="bar-value">${d.revenue > 0 ? '₹' + d.revenue : '-'}</div>
               <div class="bar-fill admin-chart-bar" style="height: ${Math.max(6, (d.revenue / maxRevenue) * 160)}px;"></div>
-              <div class="bar-label">${d.day}</div>
+              <div class="bar-label">${escapeHTML(d.day)}</div>
             </div>
           `).join('')}
         </div>
@@ -237,8 +243,8 @@ export function renderAdminDashboard() {
           ${PRODUCTS.filter(p => p.stock < 25).slice(0, 4).map(p => `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:var(--space-2) 0; border-bottom:1px solid rgba(255,255,255,0.06);">
               <div>
-                <div style="font-weight:600; font-size:var(--text-xs); color:#FFF8E7;">${p.name}</div>
-                <div class="tamil-text" style="font-size:11px; color:var(--gold-400);">${p.tamilName}</div>
+                <div style="font-weight:600; font-size:var(--text-xs); color:#FFF8E7;">${escapeHTML(p.name)}</div>
+                <div class="tamil-text" style="font-size:11px; color:var(--gold-400);">${escapeHTML(p.tamilName)}</div>
               </div>
               <span class="status-badge ${p.stock < 15 ? 'status-outstock' : 'status-lowstock'}" style="font-size:10px;">${p.stock} left</span>
             </div>
@@ -273,27 +279,33 @@ export function renderAdminDashboard() {
           </thead>
           <tbody>
             ${recentOrders.length > 0 ? recentOrders.map(order => {
-              const invNo = order.invoiceNo || `VF/260921/${order.id.slice(-5)}`;
+              const safeOrderId = escapeHTML(order.id);
+              const invNo = escapeHTML(order.invoiceNo || `VF/260921/${order.id.slice(-5)}`);
+              const custName = escapeHTML(order.customer?.name || 'Patron');
+              const custPhone = escapeHTML(order.customer?.phone || 'N/A');
+              const safeStatus = escapeHTML((order.status || 'pending').toLowerCase());
+              const itemsCount = Array.isArray(order.items) ? order.items.length : 0;
+
               return `
                 <tr>
                   <td>
-                    <span class="admin-order-id-badge">${order.id}</span>
+                    <span class="admin-order-id-badge">${safeOrderId}</span>
                     <span class="admin-invoice-badge">${invNo}</span>
                   </td>
                   <td>
-                    <div style="font-weight:700; color:#FFF8E7;">${order.customer.name}</div>
-                    <div style="font-size:11px; color:var(--cream-400);">${order.customer.phone}</div>
+                    <div style="font-weight:700; color:#FFF8E7;">${custName}</div>
+                    <div style="font-size:11px; color:var(--cream-400);">${custPhone}</div>
                   </td>
-                  <td style="font-size:var(--text-xs); color:var(--cream-200);">${order.items.length} item${order.items.length > 1 ? 's' : ''}</td>
+                  <td style="font-size:var(--text-xs); color:var(--cream-200);">${itemsCount} item${itemsCount > 1 ? 's' : ''}</td>
                   <td><strong style="color:var(--gold-400); font-size:var(--text-sm);">${formatPrice(order.total)}</strong></td>
-                  <td><span class="status-badge status-${order.status}">${order.status.toUpperCase()}</span></td>
+                  <td><span class="status-badge status-${safeStatus}">${safeStatus.toUpperCase()}</span></td>
                   <td>
                     <div class="table-actions" style="gap:6px;">
-                      <button class="admin-btn-ebill" onclick="window.downloadEBill('${order.id}')" title="Download E-Bill (PDF)">
+                      <button class="admin-btn-ebill" onclick="window.downloadEBill('${safeOrderId}')" title="Download E-Bill (PDF)">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         PDF
                       </button>
-                      <button class="table-action-btn" onclick="window.previewEBill('${order.id}')" title="Preview E-Bill">
+                      <button class="table-action-btn" onclick="window.previewEBill('${safeOrderId}')" title="Preview E-Bill">
                         ${ICONS.eye}
                       </button>
                     </div>
@@ -310,36 +322,76 @@ export function renderAdminDashboard() {
   `;
 }
 
-
 // ── Daily Special Admin Actions ──
-window.previewDailySpecial = function(productId) {
-  const p = PRODUCTS.find(prod => prod.id === parseInt(productId));
+function updateSpecialPreviewUI(p, isSaved = false) {
   if (!p) return;
   const img = document.getElementById('adminSpecialImg');
   const title = document.getElementById('adminSpecialTitle');
   const tamil = document.getElementById('adminSpecialTamil');
   const desc = document.getElementById('adminSpecialDesc');
-  if (img) img.src = p.image;
-  if (title) title.textContent = p.name;
-  if (tamil) tamil.textContent = p.tamilName;
-  if (desc) desc.textContent = p.description.substring(0, 110) + '...';
+  const price = document.getElementById('adminSpecialPrice');
+  const stock = document.getElementById('adminSpecialStock');
+  const rating = document.getElementById('adminSpecialRating');
+  const previewBox = document.getElementById('adminSpecialPreviewBox');
+  const sel = document.getElementById('adminDailySpecialSelect');
+
+  if (img) img.src = p.image || '';
+  if (title) title.textContent = p.name || '';
+  if (tamil) tamil.textContent = p.tamilName || '';
+  if (desc) desc.textContent = p.description ? p.description.substring(0, 110) + '...' : '';
+  if (price) price.textContent = `₹${p.price || 0}`;
+  if (stock) stock.textContent = `${p.stock !== undefined ? p.stock : 50} left`;
+  if (rating) rating.textContent = `⭐ ${p.rating || '4.9'} (${p.reviews || 100})`;
+  if (sel && parseInt(sel.value, 10) !== p.id) sel.value = p.id;
+
+  if (previewBox) {
+    previewBox.classList.remove('special-pulse-update');
+    void previewBox.offsetWidth; // trigger reflow
+    previewBox.classList.add('special-pulse-update');
+  }
+
+  // Update pills and badge if saved
+  if (isSaved) {
+    document.querySelectorAll('#specialQuickPills .quick-pick-pill').forEach(btn => {
+      const pid = parseInt(btn.dataset.productId, 10);
+      if (pid === p.id) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    const liveBadge = document.getElementById('specialLiveBadge');
+    if (liveBadge) {
+      liveBadge.classList.add('badge-highlight');
+      setTimeout(() => liveBadge.classList.remove('badge-highlight'), 1200);
+    }
+  }
+}
+
+window.previewDailySpecial = function(productId) {
+  const products = (ProductsStore && ProductsStore.get) ? ProductsStore.get() : PRODUCTS;
+  const p = products.find(prod => prod.id === parseInt(productId, 10));
+  if (!p) return;
+  updateSpecialPreviewUI(p, false);
 };
 
 window.saveDailySpecial = function() {
   const sel = document.getElementById('adminDailySpecialSelect');
   if (!sel) return;
-  const id = parseInt(sel.value);
+  const id = parseInt(sel.value, 10);
   DailySpecialStore.setId(id);
-  const p = PRODUCTS.find(prod => prod.id === id);
-  showToast('🌟 Daily Special Updated!', `${p ? p.name : 'Item'} is now live for all users on the store!`, 'success');
-  window.adminNavigate('dashboard');
+  const products = (ProductsStore && ProductsStore.get) ? ProductsStore.get() : PRODUCTS;
+  const p = products.find(prod => prod.id === id);
+  updateSpecialPreviewUI(p, true);
+  showToast('🌟 Daily Special Updated!', `${p ? escapeHTML(p.name) : 'Item'} is now live on customer screen & home page!`, 'success');
 };
 
 window.quickSelectDailySpecial = function(productId) {
-  const id = parseInt(productId);
+  const id = parseInt(productId, 10);
   DailySpecialStore.setId(id);
-  const p = PRODUCTS.find(prod => prod.id === id);
-  showToast('🌟 Daily Special Set!', `${p ? p.name : 'Item'} is now active as today's Daily Special!`, 'success');
-  window.adminNavigate('dashboard');
+  const products = (ProductsStore && ProductsStore.get) ? ProductsStore.get() : PRODUCTS;
+  const p = products.find(prod => prod.id === id);
+  updateSpecialPreviewUI(p, true);
+  showToast('🌟 Daily Special Set!', `${p ? escapeHTML(p.name) : 'Item'} is now active as today's Daily Special!`, 'success');
 };
-

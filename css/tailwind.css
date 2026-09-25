@@ -1,0 +1,8 @@
+/* ============================================
+   VEDICFUELOON — TAILWIND CSS INTEGRATION
+   Utility-first styles with Bootstrap 5 compatibility
+   ============================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

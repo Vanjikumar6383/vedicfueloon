@@ -1,6 +1,6 @@
 # ==============================================================================
-# VEDICFUELOON — INFINITYFREE COMPATIBLE CONFIGURATION
-# (Note: "Options -Indexes" is excluded because InfinityFree blocks Options directives with 403 Forbidden)
+# VEDICFUELOON — HARDENED PRODUCTION WEB SERVER CONFIGURATION
+# (InfinityFree & Standard Apache Compatible)
 # ==============================================================================
 
 # 1. Set Primary Document File
@@ -9,7 +9,39 @@ DirectoryIndex index.html index.php
 # 2. Default Charset
 AddDefaultCharset UTF-8
 
-# 3. Proper MIME Types (ensures MP4 video and SVG play smoothly)
+# 3. Enterprise HTTP Security Headers (Defend against XSS, Clickjacking, MIME-Sniffing)
+<IfModule mod_headers.c>
+  # Prevent MIME type sniffing attacks
+  Header set X-Content-Type-Options "nosniff"
+
+  # Prevent Clickjacking by restricting framing to same origin
+  Header set X-Frame-Options "SAMEORIGIN"
+
+  # Legacy browser XSS filter enforcement
+  Header set X-XSS-Protection "1; mode=block"
+
+  # Limit referrer information leakage on cross-origin requests
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Disable invasive device sensors and permissions
+  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+  # Content Security Policy (CSP)
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob:; connect-src 'self' https:; frame-ancestors 'self'; object-src 'none'; base-uri 'self';"
+</IfModule>
+
+# 4. Block Direct Access to Sensitive Files, Schemas, Databases, and Configs
+<FilesMatch "(^\.|\.(sql|db|sqlite|sqlite3|csv|log|bak|env|ini|py|sh|config\.js)$)">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# 5. Proper MIME Types (ensures MP4 video, WebP, SVG play smoothly)
 <IfModule mod_mime.c>
   AddType video/mp4 .mp4
   AddType image/svg+xml .svg .svgz
@@ -21,12 +53,12 @@ AddDefaultCharset UTF-8
   AddType application/json .json
 </IfModule>
 
-# 4. Gzip Compression
+# 6. Gzip Compression (Performance Optimization)
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json image/svg+xml
 </IfModule>
 
-# 5. Browser Caching
+# 7. Browser Caching
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresDefault "access plus 1 month"
@@ -39,7 +71,7 @@ AddDefaultCharset UTF-8
   ExpiresByType video/mp4 "access plus 1 year"
 </IfModule>
 
-# 6. Fallback Routing for SPA
+# 8. Single Page Application (SPA) Fallback Routing
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /

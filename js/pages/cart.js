@@ -4,6 +4,7 @@
 
 import { Cart } from '../store.js';
 import { formatPrice, ICONS } from '../components.js';
+import { escapeHTML } from '../security.js';
 
 export function renderCartPage() {
   const items = Cart.get();
@@ -40,32 +41,41 @@ export function renderCartPage() {
         <div class="cart-layout">
           <!-- Cart Items -->
           <div class="reveal">
-            ${items.map(item => `
-              <div class="cart-item" data-cart-id="${item.id}">
-                <div class="cart-item-image">
-                  ${item.image 
-                    ? `<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-lg);" />` 
-                    : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--gold-400);">${ICONS.bowl}</div>`
-                  }
-                </div>
-                <div class="cart-item-info">
-                  <h4>${item.name}</h4>
-                  <span class="cart-item-tamil tamil-text">${item.tamilName}</span>
-                  <div class="cart-item-actions">
-                    <div class="qty-selector">
-                      <button onclick="window.updateCartQty(${item.id}, ${item.qty - 1})">−</button>
-                      <input type="text" class="qty-value" value="${item.qty}" readonly />
-                      <button onclick="window.updateCartQty(${item.id}, ${item.qty + 1})">+</button>
+            ${items.map(item => {
+              const safeName = escapeHTML(item.name);
+              const safeTamil = escapeHTML(item.tamilName);
+              const safeImg = escapeHTML(item.image || '');
+              const safeQty = Math.max(1, parseInt(item.qty, 10) || 1);
+              const safeId = parseInt(item.id, 10);
+              const price = Number(item.price) || 0;
+
+              return `
+                <div class="cart-item" data-cart-id="${safeId}">
+                  <div class="cart-item-image">
+                    ${safeImg 
+                      ? `<img src="${safeImg}" alt="${safeName}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-lg);" />` 
+                      : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--gold-400);">${ICONS.bowl}</div>`
+                    }
+                  </div>
+                  <div class="cart-item-info">
+                    <h4>${safeName}</h4>
+                    <span class="cart-item-tamil tamil-text">${safeTamil}</span>
+                    <div class="cart-item-actions">
+                      <div class="qty-selector">
+                        <button onclick="window.updateCartQty(${safeId}, ${safeQty - 1})">−</button>
+                        <input type="text" class="qty-value" value="${safeQty}" readonly />
+                        <button onclick="window.updateCartQty(${safeId}, ${safeQty + 1})">+</button>
+                      </div>
+                      <button class="cart-item-remove" onclick="window.removeCartItem(${safeId})">${ICONS.trash} Remove</button>
                     </div>
-                    <button class="cart-item-remove" onclick="window.removeCartItem(${item.id})">${ICONS.trash} Remove</button>
+                  </div>
+                  <div class="cart-item-price">
+                    ${formatPrice(price * safeQty)}
+                    ${safeQty > 1 ? `<div style="font-size:var(--text-xs); color:var(--neutral-400); font-weight:400;">₹${price} × ${safeQty}</div>` : ''}
                   </div>
                 </div>
-                <div class="cart-item-price">
-                  ${formatPrice(item.price * item.qty)}
-                  ${item.qty > 1 ? `<div style="font-size:var(--text-xs); color:var(--neutral-400); font-weight:400;">₹${item.price} × ${item.qty}</div>` : ''}
-                </div>
-              </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
 
           <!-- Cart Summary -->

@@ -149,10 +149,10 @@ export function renderFooter() {
               </div>
               <p>Authentic Tamil traditional health foods, crafted with love and heritage. Every spoon carries the wisdom of ancient Siddha nutrition and grandmother's stone-ground recipes.</p>
               <div class="footer-social">
-                <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20order%20from%20VedicFueloon" target="_blank" rel="noopener" aria-label="WhatsApp Official" class="social-brand-btn social-wa-btn" title="Chat on WhatsApp (+91 98765 43210)">
+                <a href="https://wa.me/919876543210?text=Hi!%20I%20would%20like%20to%20order%20from%20VedicFueloon" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp Official" class="social-brand-btn social-wa-btn" title="Chat on WhatsApp (+91 98765 43210)">
                   ${ICONS.realWhatsapp}
                 </a>
-                <a href="https://instagram.com/vedicfueloon" target="_blank" rel="noopener" aria-label="Instagram Official" class="social-brand-btn social-ig-btn" title="Follow on Instagram (@vedicfueloon)">
+                <a href="https://instagram.com/vedicfueloon" target="_blank" rel="noopener noreferrer" aria-label="Instagram Official" class="social-brand-btn social-ig-btn" title="Follow on Instagram (@vedicfueloon)">
                   ${ICONS.realInstagram}
                 </a>
               </div>
@@ -184,7 +184,7 @@ export function renderFooter() {
               <h4>Direct Connect</h4>
               <ul class="footer-exclusive-channels">
                 <li>
-                  <a href="https://wa.me/919876543210?text=Hi!%20I%20have%20an%20inquiry%20regarding%20VedicFueloon" target="_blank" rel="noopener" class="footer-channel-link">
+                  <a href="https://wa.me/919876543210?text=Hi!%20I%20have%20an%20inquiry%20regarding%20VedicFueloon" target="_blank" rel="noopener noreferrer" class="footer-channel-link">
                     <span class="channel-link-logo">${ICONS.realWhatsapp}</span>
                     <div class="channel-link-meta">
                       <span class="channel-link-title">WhatsApp Support</span>
@@ -193,7 +193,7 @@ export function renderFooter() {
                   </a>
                 </li>
                 <li>
-                  <a href="https://instagram.com/vedicfueloon" target="_blank" rel="noopener" class="footer-channel-link">
+                  <a href="https://instagram.com/vedicfueloon" target="_blank" rel="noopener noreferrer" class="footer-channel-link">
                     <span class="channel-link-logo">${ICONS.realInstagram}</span>
                     <div class="channel-link-meta">
                       <span class="channel-link-title">Instagram DM</span>
@@ -312,14 +312,34 @@ export function showToast(title, message, type = 'success') {
   };
   const toast = document.createElement('div');
   toast.className = `toast ${type === 'error' ? 'toast-error' : type === 'warning' ? 'toast-warning' : ''}`;
-  toast.innerHTML = `
-    <span class="toast-icon">${icons[type] || ICONS.check}</span>
-    <div class="toast-content">
-      <div class="toast-title">${title}</div>
-      <div class="toast-message">${message}</div>
-    </div>
-    <span class="toast-close" onclick="this.parentElement.remove()">${ICONS.x}</span>
-  `;
+  
+  const iconSpan = document.createElement('span');
+  iconSpan.className = 'toast-icon';
+  iconSpan.innerHTML = icons[type] || ICONS.check;
+
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'toast-content';
+
+  const titleDiv = document.createElement('div');
+  titleDiv.className = 'toast-title';
+  titleDiv.textContent = title || '';
+
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'toast-message';
+  msgDiv.textContent = message || '';
+
+  contentDiv.appendChild(titleDiv);
+  contentDiv.appendChild(msgDiv);
+
+  const closeSpan = document.createElement('span');
+  closeSpan.className = 'toast-close';
+  closeSpan.innerHTML = ICONS.x;
+  closeSpan.onclick = () => toast.remove();
+
+  toast.appendChild(iconSpan);
+  toast.appendChild(contentDiv);
+  toast.appendChild(closeSpan);
+
   container.appendChild(toast);
   
   requestAnimationFrame(() => {
@@ -406,7 +426,7 @@ export function setupSplitTextHeadings() {
         return frag;
       } else if (node.nodeType === Node.ELEMENT_NODE) {
         const tag = node.tagName.toLowerCase();
-        if (tag === 'br' || tag === 'svg' || tag === 'path' || tag === 'circle' || tag === 'polygon' || tag === 'rect' || tag === 'line' || tag === 'polyline' || node.classList?.contains('icon-svg')) {
+        if (tag === 'br' || tag === 'svg' || tag === 'path' || tag === 'circle' || tag === 'polygon' || tag === 'rect' || tag === 'line' || tag === 'polyline' || node.classList?.contains('icon-svg') || node.classList?.contains('highlight')) {
           return node.cloneNode(true);
         }
         const clone = node.cloneNode(false);

@@ -8,6 +8,7 @@
 import html2pdf from 'html2pdf.js';
 import { ICONS, formatPrice } from './components.js';
 import { Orders } from './store.js';
+import { escapeHTML, sanitizeText } from './security.js';
 
 // ── Date & Time Formatters matching bill.pdf (e.g. "31 Aug 2026", "06:15 PM") ──
 export function formatInvoiceDate(dateInput) {
@@ -47,41 +48,51 @@ export function getInvoiceData(order) {
 
   const dateCode = new Date(createdAt).toISOString().slice(2, 10).replace(/-/g, '');
   const rawId = (order.id || '1').replace(/\D/g, '').slice(-5) || '00125';
-  const invoiceNo = order.invoiceNo || `VF/${dateCode}/${rawId.padStart(5, '0')}`;
+  const invoiceNo = escapeHTML(order.invoiceNo || `VF/${dateCode}/${rawId.padStart(5, '0')}`);
 
   const customer = order.customer || {};
-  const customerName = customer.name || 'Valued Patron';
-  const customerPhone = customer.phone ? (customer.phone.startsWith('+91') ? customer.phone : '+91 ' + customer.phone) : '+91 98765 43210';
-  const customerEmail = customer.email || `${customerName.toLowerCase().replace(/\s+/g, '.') || 'patron'}@email.com`;
+  const rawCustomerName = customer.name || 'Valued Patron';
+  const customerName = escapeHTML(rawCustomerName);
+  const customerPhone = escapeHTML(customer.phone ? (customer.phone.startsWith('+91') ? customer.phone : '+91 ' + customer.phone) : '+91 98765 43210');
+  const customerEmail = escapeHTML(customer.email || `${rawCustomerName.toLowerCase().replace(/[^a-z0-9]/g, '.') || 'patron'}@email.com`);
   
   // Parse address parts
   const fullAddress = customer.address || '45, Anna Nagar West, Chennai, Tamil Nadu - 600040';
   const pincodeMatch = fullAddress.match(/\b\d{6}\b/);
-  const pincode = customer.pincode || (pincodeMatch ? pincodeMatch[0] : '600040');
+  const pincode = escapeHTML(customer.pincode || (pincodeMatch ? pincodeMatch[0] : '600040'));
 
   // Split address into street and city/state
   const addressParts = fullAddress.split(',').map(s => s.trim());
   let street = addressParts.slice(0, 2).join(', ');
   let cityState = addressParts.slice(2).join(', ');
   if (!street) street = fullAddress;
-  if (!cityState) cityState = 'Tamil Nadu - ' + pincode;
+  if (!cityState) cityState = 'Tamil Nadu - ' + (pincodeMatch ? pincodeMatch[0] : '600040');
 
-  const items = (order.items && order.items.length > 0) ? order.items : [
+  street = escapeHTML(street);
+  cityState = escapeHTML(cityState);
+
+  const rawItems = (order.items && order.items.length > 0) ? order.items : [
     { name: 'Karupu Kauvni Kanji (500ml)', qty: 1, price: 89 },
     { name: 'Sprouted Pulses Bowl (200g)', qty: 1, price: 69 }
   ];
+
+  const items = rawItems.map(it => ({
+    name: escapeHTML(it.name || 'Item'),
+    qty: Math.max(1, parseInt(it.qty, 10) || 1),
+    price: Number(it.price) || 0
+  }));
 
   const subtotal = order.subtotal || items.reduce((sum, it) => sum + (it.price * (it.qty || 1)), 0);
   const shippingCharges = order.delivery !== undefined ? order.delivery : (subtotal >= 499 ? 0 : 40);
   const discount = order.discount || 0;
   const grandTotal = order.total || (subtotal + shippingCharges - discount);
 
-  const paymentMethod = order.paymentMethod || 'UPI';
-  const paymentStatus = order.paymentStatus || (order.status === 'cancelled' ? 'Refunded' : 'Paid');
-  const paymentId = order.paymentId || ('UPI/' + (dateCode + '98415' + Math.floor(Math.random() * 899 + 100)));
-  const transactionId = order.transactionId || ('3XQ' + Math.random().toString(36).substring(2, 8).toUpperCase() + 'Z1');
+  const paymentMethod = escapeHTML(order.paymentMethod || 'UPI');
+  const paymentStatus = escapeHTML(order.paymentStatus || (order.status === 'cancelled' ? 'Refunded' : 'Paid'));
+  const paymentId = escapeHTML(order.paymentId || ('UPI/' + (dateCode + '98415' + Math.floor(Math.random() * 899 + 100))));
+  const transactionId = escapeHTML(order.transactionId || ('3XQ' + Math.random().toString(36).substring(2, 8).toUpperCase() + 'Z1'));
 
-  const customerId = customer.id || ('CUS-' + (Math.abs(customerName.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0)) % 9000000 + 1000000));
+  const customerId = escapeHTML(customer.id || ('CUS-' + (Math.abs(rawCustomerName.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0)) % 9000000 + 1000000)));
 
   return {
     invoiceNo,

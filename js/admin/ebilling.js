@@ -1,17 +1,18 @@
 /* ============================================
-   VEDICFUELOON — ADMIN E-BILLING HUB
+   VEDICFUELOON — ADMIN E-BILLING HUB (SECURED)
    Comprehensive Tax Invoice & E-Bill Management
-   Synchronized with bill.pdf Format
+   Secured with Context-Aware HTML Escaping (Anti-XSS)
    ============================================ */
 
 import { Orders } from '../store.js';
 import { formatPrice, formatDate, ICONS, showToast } from '../components.js';
 import { downloadEBillPDF, openEBillModal, printEBill, formatInvoiceDate, formatInvoiceTime } from '../ebill.js';
+import { escapeHTML } from '../security.js';
 
 export function renderAdminEBilling() {
   const orders = Orders.get();
   
-  const totalBilled = orders.reduce((sum, o) => sum + (o.status !== 'cancelled' ? o.total : 0), 0);
+  const totalBilled = orders.reduce((sum, o) => sum + (o.status !== 'cancelled' ? (Number(o.total) || 0) : 0), 0);
   const paidCount = orders.filter(o => o.paymentStatus === 'Paid' || o.status === 'delivered').length;
   const pendingCount = orders.filter(o => o.paymentStatus === 'Pending' || o.status === 'pending').length;
 
@@ -101,28 +102,34 @@ export function renderAdminEBilling() {
           </thead>
           <tbody>
             ${orders.length > 0 ? orders.map(order => {
-              const invNo = order.invoiceNo || `VF/260921/${order.id.slice(-5)}`;
-              const payStatus = order.paymentStatus || (order.status === 'cancelled' ? 'Refunded' : 'Paid');
+              const safeOrderId = escapeHTML(order.id);
+              const invNo = escapeHTML(order.invoiceNo || `VF/260921/${order.id.slice(-5)}`);
+              const custName = escapeHTML(order.customer?.name || 'Patron');
+              const custPhone = escapeHTML(order.customer?.phone || 'N/A');
+              const payMethod = escapeHTML(order.paymentMethod || 'UPI');
+              const payId = escapeHTML(order.paymentId || 'UPI/VERIFIED');
+              const payStatus = escapeHTML(order.paymentStatus || (order.status === 'cancelled' ? 'Refunded' : 'Paid'));
               const isPaid = payStatus === 'Paid';
+
               return `
-                <tr data-invoice-id="${order.id}">
+                <tr data-invoice-id="${safeOrderId}">
                   <td>
                     <span class="admin-invoice-badge">${invNo}</span>
                   </td>
                   <td>
-                    <span class="admin-order-id-badge">${order.id}</span>
+                    <span class="admin-order-id-badge">${safeOrderId}</span>
                   </td>
                   <td>
-                    <div style="font-weight:700; color:#FFF8E7;">${order.customer.name}</div>
-                    <div style="font-size:var(--text-xs); color:var(--cream-400);">${order.customer.phone}</div>
+                    <div style="font-weight:700; color:#FFF8E7;">${custName}</div>
+                    <div style="font-size:var(--text-xs); color:var(--cream-400);">${custPhone}</div>
                   </td>
                   <td style="font-size:var(--text-xs); color:var(--cream-300); white-space:nowrap;">
-                    <div>${formatInvoiceDate(order.createdAt)}</div>
-                    <div style="color:var(--cream-500);">${formatInvoiceTime(order.createdAt)}</div>
+                    <div>${escapeHTML(formatInvoiceDate(order.createdAt))}</div>
+                    <div style="color:var(--cream-500);">${escapeHTML(formatInvoiceTime(order.createdAt))}</div>
                   </td>
                   <td>
-                    <div style="font-size:var(--text-xs); font-weight:600; color:var(--cream-200);">${order.paymentMethod || 'UPI'}</div>
-                    <div style="font-size:10px; color:var(--gold-500); font-family:var(--font-mono, monospace);">${order.paymentId || 'UPI/VERIFIED'}</div>
+                    <div style="font-size:var(--text-xs); font-weight:600; color:var(--cream-200);">${payMethod}</div>
+                    <div style="font-size:10px; color:var(--gold-500); font-family:var(--font-mono, monospace);">${payId}</div>
                   </td>
                   <td>
                     <strong style="color:var(--gold-400); font-size:var(--text-sm);">${formatPrice(order.total)}</strong>
@@ -134,14 +141,14 @@ export function renderAdminEBilling() {
                   </td>
                   <td>
                     <div class="table-actions" style="gap:6px;">
-                      <button class="admin-btn-ebill" onclick="window.downloadEBill('${order.id}')" title="Download Official PDF">
+                      <button class="admin-btn-ebill btn-dl-ebill" data-order-id="${safeOrderId}" onclick="window.downloadEBill('${safeOrderId}')" title="Download Official PDF">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         PDF
                       </button>
-                      <button class="table-action-btn" onclick="window.previewEBill('${order.id}')" title="View Full Bill">
+                      <button class="table-action-btn" onclick="window.previewEBill('${safeOrderId}')" title="View Full Bill">
                         ${ICONS.eye}
                       </button>
-                      <button class="table-action-btn" onclick="window.printEBillDirect('${order.id}')" title="Print Invoice">
+                      <button class="table-action-btn" onclick="window.printEBillDirect('${safeOrderId}')" title="Print Invoice">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
                       </button>
                     </div>
@@ -160,7 +167,7 @@ export function renderAdminEBilling() {
 
 export function initAdminEBillingHandlers() {
   window.adminSearchInvoices = function(query) {
-    const q = query.toLowerCase();
+    const q = (query || '').toLowerCase().trim();
     const rows = document.querySelectorAll('#adminEBillTable tbody tr');
     rows.forEach(row => {
       row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
